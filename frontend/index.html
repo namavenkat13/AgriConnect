@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriConnect - Farmer Procurement Management Platform & Live Mandi Rates</title>
+  <link rel="stylesheet" href="css/style.css?v=2.3">
+  <script src="js/theme.js"></script>
+  <script src="js/ist-clock.js"></script>
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="logo-group" style="display: flex; align-items: center; gap: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="logo-icon">🌾</div>
+          <div>
+            <span class="brand-title">AgriConnect</span>
+            <div class="brand-tagline">No more waiting in line for your harvest.</div>
+          </div>
+        </div>
+        <div class="header-live-clock" title="Live India Standard Time (Asia/Kolkata)">
+          <span class="live-clock-badge"><span class="live-clock-pulse"></span>IST</span>
+          <span class="live-clock-time">--:--:--</span>
+          <span class="live-clock-date">-- --- ----</span>
+        </div>
+      </div>
+      <div class="header-nav">
+        <button class="theme-toggle-btn" onclick="AgriTheme.toggleTheme()" aria-label="Toggle theme">
+          <span class="btn-icon">🌙</span> <span>Dark Mode</span>
+        </button>
+        <a href="#mandi-directory" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.9rem;">
+          <span class="btn-icon">🏛️</span> <span>All Mandis</span>
+        </a>
+        <a href="#mandi-rates" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.9rem;">
+          <span class="btn-icon">📊</span> <span>Live Rates</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stock-Market Scrolling Mandi Ticker Strip -->
+  <div class="ticker-strip-wrapper">
+    <div class="ticker-track" id="ticker-track">
+      <!-- Injected dynamically by ticker.js -->
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="container">
+    
+    <!-- Hero Section with Tabbed Auth Card -->
+    <section class="landing-hero">
+      <div class="hero-text">
+        <h1>Direct Mandi Access. <span>Zero Waiting.</span> Guaranteed Payouts.</h1>
+        <p>
+          Book procurement slots from your mobile phone, track your real-time queue position with live wait times, and receive automatic SMS updates at every step from weighing to direct bank transfer.
+        </p>
+        
+        <div class="hero-features">
+          <div class="feature-pill">
+            <span class="feature-icon">⏱️</span>
+            <div>
+              <strong>Live Queue Tracker</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Know exact wait times before arrival</div>
+            </div>
+          </div>
+          <div class="feature-pill">
+            <span class="feature-icon">⚖️</span>
+            <div>
+              <strong>Transparent Grading</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Live status from weighbridge to acceptance</div>
+            </div>
+          </div>
+          <div class="feature-pill">
+            <span class="feature-icon">📈</span>
+            <div>
+              <strong>Daily Mandi Ticker</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Real-time APMC benchmark prices</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auth Card: Login / Register Tabs -->
+      <div class="auth-card">
+        <div class="tab-nav">
+          <button class="tab-btn active" id="tab-btn-login" onclick="switchAuthTab('login')">
+            <span class="tab-icon">👨‍🌾</span> <span>Farmer Login</span>
+          </button>
+          <button class="tab-btn" id="tab-btn-register" onclick="switchAuthTab('register')">
+            <span class="tab-icon">🌾</span> <span>Farmer Register</span>
+          </button>
+          <button class="tab-btn staff-tab" id="tab-btn-mandi-login" onclick="switchAuthTab('mandi-login')">
+            <span class="tab-icon">🏢</span> <span>Mandi Login</span>
+          </button>
+          <button class="tab-btn staff-tab" id="tab-btn-mandi-register" onclick="switchAuthTab('mandi-register')">
+            <span class="tab-icon">📝</span> <span>Mandi Register</span>
+          </button>
+        </div>
+
+        <!-- Tab 1: Farmer Login Form -->
+        <div class="tab-content active" id="tab-content-login">
+          <form id="login-form">
+            <div class="form-group">
+              <label class="form-label" for="login-phone">Farmer Registered Phone</label>
+              <input type="tel" id="login-phone" class="form-input" placeholder="e.g. 9876543210" required autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="login-password">Password</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+                <button type="button" class="password-toggle-btn" data-target="login-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="login-submit-btn">
+              Farmer Secure Login →
+            </button>
+          </form>
+
+          <div style="margin-top: 1.25rem; padding: 0.75rem; background: var(--bg-card-alt); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+            <span class="demo-icon">👨‍🌾</span> <div><strong>Demo Farmer Account:</strong> Phone: <code>9876543210</code> | Password: <code>farmer123</code></div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Farmer Register Form -->
+        <div class="tab-content" id="tab-content-register">
+          <form id="register-form">
+            <div class="form-group">
+              <label class="form-label" for="reg-fullname">Full Name</label>
+              <input type="text" id="reg-fullname" class="form-input" placeholder="e.g. Ramesh Kumar Patil" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-phone">Phone Number (10 Digits) *</label>
+              <input type="tel" id="reg-phone" class="form-input" placeholder="e.g. 9822001122" required maxlength="10">
+              <div class="form-help">Must be a valid 10-digit mobile number starting with 6, 7, 8, or 9.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-password">Create Password</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="reg-password" class="form-input" placeholder="At least 6 characters" required minlength="6">
+                <button type="button" class="password-toggle-btn" data-target="reg-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-village">Village / Address</label>
+              <input type="text" id="reg-village" class="form-input" placeholder="e.g. Dindori, Nashik">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-idproof">Aadhaar Card Number (12 Digits) *</label>
+              <input type="text" id="reg-idproof" class="form-input" placeholder="e.g. 5421 8921 4412" required maxlength="14">
+              <div class="form-help">Must consist of exactly 12 numeric digits.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Crops Grown (Select all that apply)</label>
+              <div class="crop-chip-grid" id="crop-chip-grid" style="max-height: 180px; overflow-y: auto;">
+                <label class="crop-chip-label"><input type="checkbox" value="Wheat (Sharbati)"> <span class="crop-icon">🌾</span> Wheat</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Paddy (Basmati)"> <span class="crop-icon">🍚</span> Paddy (Rice)</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Tomato (Hybrid)"> <span class="crop-icon">🍅</span> Tomato</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Onion (Red Nashik)"> <span class="crop-icon">🧅</span> Onion</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Potato (Jyoti)"> <span class="crop-icon">🥔</span> Potato</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Cotton (Medium Staple)"> <span class="crop-icon">☁️</span> Cotton</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Soybean (Yellow)"> <span class="crop-icon">🌱</span> Soybean</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Maize (Kharif)"> <span class="crop-icon">🌽</span> Maize</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Mustard (Black)"> <span class="crop-icon">🌼</span> Mustard</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Green Gram (Moong)"> <span class="crop-icon">🌿</span> Green Gram</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Sugarcane"> <span class="crop-icon">🎋</span> Sugarcane</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Red Chilli (Guntur)"> <span class="crop-icon">🌶️</span> Red Chilli</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Gram (Chana / Chickpea)"> <span class="crop-icon">🧆</span> Gram (Chana)</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Tur Dal (Arhar / Pigeon Pea)"> <span class="crop-icon">🥣</span> Tur Dal (Arhar)</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Groundnut (Peanut)"> <span class="crop-icon">🥜</span> Groundnut</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Turmeric (Haldi)"> <span class="crop-icon">🟡</span> Turmeric</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Cumin Seeds (Jeera)"> <span class="crop-icon">🧂</span> Cumin (Jeera)</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Banana (Robusta)"> <span class="crop-icon">🍌</span> Banana</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Apple (Royal Delicious)"> <span class="crop-icon">🍎</span> Apple</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Mango (Alphonso / Kesar)"> <span class="crop-icon">🥭</span> Mango</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Jute (Raw Jute)"> <span class="crop-icon">🧶</span> Jute</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Tea (Assam Green Leaf)"> <span class="crop-icon">🍵</span> Tea</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Arecanut (Supari)"> <span class="crop-icon">🌰</span> Arecanut</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Coffee (Arabica / Robusta)"> <span class="crop-icon">☕</span> Coffee</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Garlic (Lahsun)"> <span class="crop-icon">🧄</span> Garlic</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Ginger (Adrak)"> <span class="crop-icon">🫚</span> Ginger</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Barley (Jau)"> <span class="crop-icon">🌾</span> Barley (Jau)</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Jowar (Sorghum)"> <span class="crop-icon">🌾</span> Jowar</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Bajra (Pearl Millet)"> <span class="crop-icon">🌾</span> Bajra</label>
+                <label class="crop-chip-label"><input type="checkbox" value="Litchi (Shahi)"> <span class="crop-icon">🍒</span> Litchi</label>
+              </div>
+
+              <div class="custom-crop-wrapper">
+                <input type="text" id="custom-crop-input" class="form-input" placeholder="Add custom crop not listed above">
+                <button type="button" class="btn btn-secondary" onclick="addCustomCropChip()">+ Add</button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="register-submit-btn">
+              Complete Farmer Registration →
+            </button>
+          </form>
+        </div>
+
+        <!-- Tab 3: Mandi Staff Login Form -->
+        <div class="tab-content" id="tab-content-mandi-login">
+          <form id="mandi-login-form">
+            <div class="form-group">
+              <label class="form-label" for="mandi-login-phone">Mandi Staff Official Mobile</label>
+              <input type="tel" id="mandi-login-phone" class="form-input" placeholder="e.g. 9999999999" required autocomplete="username">
+              <div class="form-help">Authorized APMC Mandi Officers, Weighbridge Staff, & Admins.</div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="mandi-login-password">Staff Password</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="mandi-login-password" class="form-input" placeholder="Enter password" required autocomplete="current-password">
+                <button type="button" class="password-toggle-btn" data-target="mandi-login-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="mandi-login-btn">
+              Mandi Staff Login →
+            </button>
+          </form>
+
+          <div style="margin-top: 1.25rem; padding: 0.75rem; background: var(--badge-booked-bg); border: 1px solid var(--badge-booked-border); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--badge-booked-text); display: flex; align-items: center; gap: 0.5rem;">
+            <span class="demo-icon">🏢</span> <div><strong>Pre-seeded Staff Account:</strong> Phone: <code>9999999999</code> | Password: <code>admin123</code></div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Register Mandi Centre & Admin Form -->
+        <div class="tab-content" id="tab-content-mandi-register">
+          <form id="mandi-register-form">
+            <div style="background: var(--alert-success-bg); border-left: 3px solid var(--success); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--alert-success-text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              <span class="demo-icon">🏛️</span> <div>Register a new APMC Mandi Centre along with its primary <strong>Mandi Admin</strong> account.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-name">Mandi / Centre Name *</label>
+              <input type="text" id="mandi-reg-name" class="form-input" placeholder="e.g. Nashik Main APMC Yard" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label class="form-label" for="mandi-reg-district">District / City *</label>
+                <input type="text" id="mandi-reg-district" class="form-input" placeholder="e.g. Nashik" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="mandi-reg-state-input">State *</label>
+                <input type="text" id="mandi-reg-state-input" class="form-input" placeholder="e.g. Maharashtra" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-location">Location / Address</label>
+              <input type="text" id="mandi-reg-location" class="form-input" placeholder="e.g. Market Yard, Panchavati">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label class="form-label" for="mandi-reg-capacity">Daily Capacity (Farmers/day)</label>
+                <input type="number" id="mandi-reg-capacity" class="form-input" placeholder="100" value="100" min="10">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="mandi-reg-crops">Crops Procured</label>
+                <input type="text" id="mandi-reg-crops" class="form-input" placeholder="e.g. Wheat, Tomato, Onion">
+              </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px dashed var(--border-color); margin: 1rem 0;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+              <span class="demo-icon">👑</span> <span>Primary Mandi Admin Details</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-fullname">Admin Full Name *</label>
+              <input type="text" id="mandi-reg-fullname" class="form-input" placeholder="e.g. Rajesh Sharma" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-phone">Official Mobile Number (10 Digits) *</label>
+              <input type="tel" id="mandi-reg-phone" class="form-input" placeholder="e.g. 9822001122" required maxlength="10">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-password">Create Admin Password *</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="mandi-reg-password" class="form-input" placeholder="At least 6 characters" required minlength="6">
+                <button type="button" class="password-toggle-btn" data-target="mandi-reg-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="mandi-register-btn">
+              Register Mandi & Admin Account →
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Public Live Mandi Rates Section (Stock Market Grid) -->
+    <section class="mandi-section" id="mandi-rates">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <h2 class="section-title">
+            <span class="pulse-indicator"></span> Today's Mandi Benchmark Rates
+          </h2>
+          <div class="section-subtitle" style="margin-bottom: 0;">
+            Live wholesale agricultural rates updated directly from regional APMC procurement centres.
+          </div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); background: var(--bg-card); padding: 0.4rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); display: inline-flex; align-items: center; gap: 0.4rem;">
+          <span class="btn-icon">🔄</span> Auto-refreshes in real-time
+        </div>
+      </div>
+
+      <!-- Crop Search & Filter Bar -->
+      <div style="background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm);">
+        <div style="flex: 1 1 300px; position: relative;">
+          <input 
+            type="text" 
+            id="crop-search-input" 
+            class="form-input" 
+            placeholder="🔍 Search crops (e.g. Wheat, Sugarcane, Chilli, Cotton, Turmeric)..." 
+            style="width: 100%; padding: 0.65rem 0.85rem 0.65rem 2.4rem; font-size: 0.95rem; margin-bottom: 0;"
+          >
+          <span style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none; opacity: 0.6;">🔍</span>
+        </div>
+        <div id="crop-count-badge" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); background: var(--bg-card-alt, #f8fafc); padding: 0.45rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); display: inline-flex; align-items: center; gap: 0.4rem;">
+          <span style="color: var(--primary-green);">●</span> Showing all 30 Mandi Crops
+        </div>
+      </div>
+
+      <!-- Price Cards Grid -->
+      <div class="rates-grid" id="rates-grid">
+        <!-- Injected dynamically by ticker.js -->
+        <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+          Loading live market prices...
+        </div>
+      </div>
+    </section>
+
+    <!-- Pan-India APMC Procurement Mandis Directory Section -->
+    <section class="mandi-section" id="mandi-directory" style="margin-top: 3rem; margin-bottom: 3.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+          <h2 class="section-title">
+            <span class="btn-icon" style="font-size: 1.5rem;">🏛️</span> All Procurement Mandis Across India
+          </h2>
+          <div class="section-subtitle" style="margin-bottom: 0;">
+            Browse and search all authorized APMC procurement centres across 31 States &amp; Union Territories. Select any mandi to book your arrival slot.
+          </div>
+        </div>
+        <div id="mandi-count-badge" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); background: var(--bg-card); padding: 0.45rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: var(--shadow-sm);">
+          <span style="color: var(--primary-green);">●</span> Loading mandis...
+        </div>
+      </div>
+
+      <!-- Filters & Live Search Bar -->
+      <div style="background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 1.1rem 1.25rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm);">
+        <div style="flex: 1 1 320px; position: relative;">
+          <input 
+            type="text" 
+            id="mandi-search-input" 
+            class="form-input" 
+            placeholder="🔍 Search mandi by name, city, district, or address..." 
+            style="width: 100%; padding: 0.65rem 0.85rem 0.65rem 2.4rem; font-size: 0.95rem; margin-bottom: 0;"
+          >
+          <span style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none; opacity: 0.6;">🔍</span>
+        </div>
+        <div style="flex: 0 1 280px; min-width: 200px;">
+          <select id="mandi-state-filter" class="form-select" style="width: 100%; padding: 0.65rem 0.85rem; font-size: 0.9rem; margin-bottom: 0;">
+            <option value="">All States (Pan-India)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Mandis Grid -->
+      <div class="mandi-directory-grid" id="mandis-container">
+        <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+          Loading procurement mandis across India...
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>AgriConnect</strong> — Smart Agricultural Procurement &amp; Live Queue Infrastructure.<br>
+        <span style="font-size: 0.75rem;">Supporting farmers with transparent procurement workflows and fair market prices.</span>
+      </div>
+      <div>
+        <a href="#mandi-directory" style="margin-right: 1rem;">Mandi Directory</a>
+        <a href="#mandi-rates" style="margin-right: 1rem;">Mandi Rates</a>
+        <a href="javascript:void(0)" onclick="focusLoginTab()">Procurement Staff Login</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Socket.IO Client Library -->
+  <script src="/socket.io/socket.io.js"></script>
+  
+  <!-- Client Scripts -->
+  <script src="js/auth.js?v=2.3"></script>
+  <script src="js/ticker.js"></script>
+  <script src="js/centres-directory.js?v=2.3"></script>
+
+  <script>
+    // Redirect already logged-in users to their respective dashboards
+    AgriAuth.redirectIfLoggedIn();
+
+    // Tab switcher (Farmer Login, Farmer Register, Mandi Login, Mandi Register)
+    function switchAuthTab(tabName) {
+      const tabs = ['login', 'register', 'mandi-login', 'mandi-register'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const content = document.getElementById(`tab-content-${t}`);
+        if (btn) btn.classList.toggle('active', t === tabName);
+        if (content) content.classList.toggle('active', t === tabName);
+      });
+    }
+
+    function focusLoginTab() {
+      switchAuthTab('login');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.getElementById('login-phone').focus();
+    }
+
+    // Add custom crop chip dynamically
+    function addCustomCropChip() {
+      const input = document.getElementById('custom-crop-input');
+      const val = input.value.trim();
+      if (!val) return;
+
+      const grid = document.getElementById('crop-chip-grid');
+      const label = document.createElement('label');
+      label.className = 'crop-chip-label';
+      label.innerHTML = `<input type="checkbox" value="${val}" checked> <span class="crop-icon">🌱</span> <span>${val}</span>`;
+      grid.appendChild(label);
+      input.value = '';
+    }
+
+    // Initialize Ticker & Form Handlers
+    document.addEventListener('DOMContentLoaded', () => {
+      AgriTicker.initMandiTicker();
+
+      // Auto-format Aadhaar input as XXXX XXXX XXXX (12 digits)
+      const aadharInput = document.getElementById('reg-idproof');
+      if (aadharInput) {
+        aadharInput.addEventListener('input', (e) => {
+          let val = e.target.value.replace(/[^0-9]/g, '').substring(0, 12);
+          let formatted = '';
+          for (let i = 0; i < val.length; i++) {
+            if (i > 0 && i % 4 === 0) formatted += ' ';
+            formatted += val[i];
+          }
+          e.target.value = formatted;
+        });
+      }
+
+      // Restrict phone inputs to numeric digits only (max 10 digits)
+      ['reg-phone', 'login-phone', 'mandi-login-phone', 'mandi-reg-phone'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '').substring(0, 10);
+          });
+        }
+      });
+
+      // 1. Farmer / Unified Login Form Submit Handler
+      const loginForm = document.getElementById('login-form');
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const phone = document.getElementById('login-phone').value;
+        const password = document.getElementById('login-password').value;
+        const btn = document.getElementById('login-submit-btn');
+
+        btn.disabled = true;
+        btn.textContent = 'Authenticating...';
+
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone_number: phone, password, expected_role: 'farmer' })
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            AgriAuth.setAuthSession(data.token, data.user);
+            AgriAuth.showToast(`Welcome back, ${data.user.full_name}!`, 'success');
+            
+            setTimeout(() => {
+              window.location.href = '/dashboard.html';
+            }, 500);
+          } else {
+            alert(data.message || 'Login failed. Please check phone number and password.');
+          }
+        } catch (err) {
+          alert('Network or server error during login.');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Secure Login →';
+        }
+      });
+
+      // 2. Farmer Register Form Submit Handler
+      const regForm = document.getElementById('register-form');
+      regForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fullName = document.getElementById('reg-fullname').value;
+        const phone = document.getElementById('reg-phone').value;
+        const password = document.getElementById('reg-password').value;
+        const village = document.getElementById('reg-village').value;
+        const idProof = document.getElementById('reg-idproof').value;
+        const btn = document.getElementById('register-submit-btn');
+
+        // Client-side phone validation
+        const phoneCheck = AgriAuth.validatePhoneNumber(phone);
+        if (!phoneCheck.valid) {
+          alert(phoneCheck.message);
+          document.getElementById('reg-phone').focus();
+          return;
+        }
+
+        // Client-side Aadhaar validation
+        const aadhaarCheck = AgriAuth.validateAadhaarNumber(idProof, true);
+        if (!aadhaarCheck.valid) {
+          alert(aadhaarCheck.message);
+          document.getElementById('reg-idproof').focus();
+          return;
+        }
+
+        const checkedCrops = [];
+        document.querySelectorAll('#crop-chip-grid input[type="checkbox"]:checked').forEach(cb => {
+          checkedCrops.push(cb.value);
+        });
+
+        btn.disabled = true;
+        btn.textContent = 'Creating Account...';
+
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              full_name: fullName,
+              phone_number: phone,
+              password,
+              village,
+              id_proof_number: idProof,
+              crops: checkedCrops
+            })
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            AgriAuth.setAuthSession(data.token, data.user);
+            AgriAuth.showToast('Registration successful! Redirecting to dashboard...', 'success');
+            setTimeout(() => {
+              window.location.href = '/dashboard.html';
+            }, 600);
+          } else {
+            alert(data.message || 'Registration failed.');
+          }
+        } catch (err) {
+          alert('Error during registration.');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Complete Farmer Registration →';
+        }
+      });
+
+      // 3. Mandi Staff Login Form Submit Handler
+      const mandiLoginForm = document.getElementById('mandi-login-form');
+      if (mandiLoginForm) {
+        mandiLoginForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const phone = document.getElementById('mandi-login-phone').value;
+          const password = document.getElementById('mandi-login-password').value;
+          const btn = document.getElementById('mandi-login-btn');
+
+          btn.disabled = true;
+          btn.textContent = 'Authenticating Mandi Desk...';
+
+          try {
+            const res = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ phone_number: phone, password, expected_role: 'mandi' })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+              AgriAuth.setAuthSession(data.token, data.user);
+              AgriAuth.showToast(`Welcome to Mandi Operations Desk, ${data.user.full_name}!`, 'success');
+              setTimeout(() => {
+                window.location.href = '/mandi.html';
+              }, 500);
+            } else {
+              alert(data.message || 'Mandi staff authentication failed.');
+            }
+          } catch (err) {
+            alert('Network error during Mandi staff login.');
+          } finally {
+            btn.disabled = false;
+            btn.textContent = 'Mandi Staff Login →';
+          }
+        });
+      }
+
+      // 4. Mandi Register Form Submit Handler
+      const mandiRegForm = document.getElementById('mandi-register-form');
+      if (mandiRegForm) {
+        mandiRegForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const name = document.getElementById('mandi-reg-name').value;
+          const district = document.getElementById('mandi-reg-district').value;
+          const state = document.getElementById('mandi-reg-state-input').value;
+          const location = document.getElementById('mandi-reg-location').value;
+          const dailyCapacity = document.getElementById('mandi-reg-capacity').value;
+          const crops = document.getElementById('mandi-reg-crops').value;
+          const adminName = document.getElementById('mandi-reg-fullname').value;
+          const adminPhone = document.getElementById('mandi-reg-phone').value;
+          const adminPassword = document.getElementById('mandi-reg-password').value;
+          const btn = document.getElementById('mandi-register-btn');
+
+          const phoneCheck = AgriAuth.validatePhoneNumber(adminPhone, false);
+          if (!phoneCheck.valid) {
+            alert(phoneCheck.message);
+            document.getElementById('mandi-reg-phone').focus();
+            return;
+          }
+
+          btn.disabled = true;
+          btn.textContent = 'Registering Mandi & Admin Account...';
+
+          try {
+            const res = await fetch('/api/mandi/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name,
+                district,
+                state,
+                location,
+                daily_capacity: dailyCapacity,
+                crops_procured: crops,
+                admin_name: adminName,
+                admin_phone: adminPhone,
+                admin_password: adminPassword
+              })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+              AgriAuth.setAuthSession(data.token, data.user);
+              AgriAuth.showToast('Mandi centre and Admin account registered successfully!', 'success');
+              setTimeout(() => {
+                window.location.href = '/mandi.html';
+              }, 600);
+            } else {
+              alert(data.message || 'Mandi registration failed.');
+            }
+          } catch (err) {
+            alert('Network error during Mandi registration.');
+          } finally {
+            btn.disabled = false;
+            btn.textContent = 'Register Mandi & Admin Account →';
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

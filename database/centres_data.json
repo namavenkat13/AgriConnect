@@ -1,0 +1,134 @@
+[
+  { "centre_id": 1, "state": "Andhra Pradesh", "city": "Guntur", "centre_name": "Guntur Mirchi & Cotton APMC Yard", "location": "Nallapadu, Guntur", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 2, "state": "Andhra Pradesh", "city": "Kurnool", "centre_name": "Kurnool Agricultural Market Yard", "location": "Market Yard, Kurnool", "daily_capacity": 65, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 3, "state": "Andhra Pradesh", "city": "Vijayawada", "centre_name": "Krishna District APMC Mandi", "location": "Gollapudi, Vijayawada", "daily_capacity": 70, "opening_time": "08:30:00", "closing_time": "17:30:00" },
+  { "centre_id": 4, "state": "Andhra Pradesh", "city": "Anantapur", "centre_name": "Anantapur Groundnut & Pulse Terminal", "location": "APMC Complex, Anantapur", "daily_capacity": 60, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 5, "state": "Andhra Pradesh", "city": "Rajahmundry", "centre_name": "Godavari Grain Procurement Centre", "location": "Morampudi, Rajahmundry", "daily_capacity": 55, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 6, "state": "Arunachal Pradesh", "city": "Itanagar", "centre_name": "Itanagar State Agriculture Market", "location": "Naharlagun, Itanagar", "daily_capacity": 40, "opening_time": "08:00:00", "closing_time": "16:00:00" },
+  { "centre_id": 7, "state": "Arunachal Pradesh", "city": "Pasighat", "centre_name": "Pasighat Agri Produce Hub", "location": "Main Bazar, Pasighat", "daily_capacity": 35, "opening_time": "08:30:00", "closing_time": "16:30:00" },
+
+  { "centre_id": 8, "state": "Assam", "city": "Guwahati", "centre_name": "Pamohi Guwahati Central APMC Mandi", "location": "Pamohi, Garchuk, Guwahati", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 9, "state": "Assam", "city": "Silchar", "centre_name": "Cachar District APMC Market", "location": "Tarapur, Silchar", "daily_capacity": 50, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+  { "centre_id": 10, "state": "Assam", "city": "Dibrugarh", "centre_name": "Upper Assam Tea & Grain Terminal", "location": "Chowkidinghee, Dibrugarh", "daily_capacity": 50, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 11, "state": "Assam", "city": "Jorhat", "centre_name": "Jorhat Agro Procurement Centre", "location": "Gar-Ali, Jorhat", "daily_capacity": 45, "opening_time": "08:30:00", "closing_time": "16:30:00" },
+
+  { "centre_id": 12, "state": "Bihar", "city": "Patna", "centre_name": "Bazar Samiti Patna Grain Mandi", "location": "Bahadurpur, Patna", "daily_capacity": 85, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 13, "state": "Bihar", "city": "Muzaffarpur", "centre_name": "Muzaffarpur Litchi & Maize APMC", "location": "Brahmpura, Muzaffarpur", "daily_capacity": 70, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 14, "state": "Bihar", "city": "Purnea", "centre_name": "Purnea Gulabbagh Corn & Jute Mandi", "location": "Gulabbagh, Purnea", "daily_capacity": 90, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 15, "state": "Bihar", "city": "Gaya", "centre_name": "Magadh Regional Procurement Centre", "location": "Chandauti, Gaya", "daily_capacity": 60, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+  { "centre_id": 16, "state": "Bihar", "city": "Bhagalpur", "centre_name": "Bhagalpur Silk & Grain Depot", "location": "Barari, Bhagalpur", "daily_capacity": 55, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 17, "state": "Chhattisgarh", "city": "Raipur", "centre_name": "Raipur Tulsi APMC Mandi Yard", "location": "Pandri, Raipur", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 18, "state": "Chhattisgarh", "city": "Bilaspur", "centre_name": "Bilaspur Grain & Rice Depot", "location": "Tifra, Bilaspur", "daily_capacity": 60, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+  { "centre_id": 19, "state": "Chhattisgarh", "city": "Rajnandgaon", "centre_name": "Rajnandgaon Paddy Procurement Centre", "location": "Ganj Line, Rajnandgaon", "daily_capacity": 65, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 20, "state": "Chhattisgarh", "city": "Durg", "centre_name": "Durg-Bhilai Krishi Upaj Mandi", "location": "Malviya Nagar, Durg", "daily_capacity": 55, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 21, "state": "Goa", "city": "Panaji", "centre_name": "North Goa APMC Mandi", "location": "Curti, Ponda, Goa", "daily_capacity": 40, "opening_time": "08:30:00", "closing_time": "16:30:00" },
+  { "centre_id": 22, "state": "Goa", "city": "Margao", "centre_name": "South Goa Agricultural Market Yard", "location": "Arlem, Margao, Goa", "daily_capacity": 45, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 23, "state": "Gujarat", "city": "Ahmedabad", "centre_name": "Ahmedabad APMC Mandi", "location": "Jamalpur, Ahmedabad", "daily_capacity": 90, "opening_time": "07:30:00", "closing_time": "18:00:00" },
+  { "centre_id": 24, "state": "Gujarat", "city": "Surat", "centre_name": "Surat APMC Sardar Market", "location": "Kumbharia, Surat", "daily_capacity": 85, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 25, "state": "Gujarat", "city": "Rajkot", "centre_name": "Rajkot APMC Cotton & Groundnut Yard", "location": "Bedi Road, Rajkot", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 26, "state": "Gujarat", "city": "Unjha", "centre_name": "Unjha APMC Spice & Cumin Terminal", "location": "Patan Road, Unjha", "daily_capacity": 100, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 27, "state": "Gujarat", "city": "Gondal", "centre_name": "Gondal APMC Chilli & Oilseed Mandi", "location": "Station Road, Gondal", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 28, "state": "Gujarat", "city": "Vadodara", "centre_name": "Sayajipura APMC Mandi", "location": "Sayajipura, Vadodara", "daily_capacity": 65, "opening_time": "08:30:00", "closing_time": "17:30:00" },
+
+  { "centre_id": 29, "state": "Haryana", "city": "Karnal", "centre_name": "Karnal Basmati Rice Hub APMC", "location": "New Grain Market, Karnal", "daily_capacity": 85, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 30, "state": "Haryana", "city": "Rohtak", "centre_name": "Rohtak New Grain Market", "location": "Delhi Road, Rohtak", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 31, "state": "Haryana", "city": "Hisar", "centre_name": "Hisar Cotton & Wheat Mandi", "location": "Barwala Road, Hisar", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 32, "state": "Haryana", "city": "Sirsa", "centre_name": "Sirsa Grain Terminal", "location": "Dabwali Road, Sirsa", "daily_capacity": 70, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 33, "state": "Haryana", "city": "Ambala", "centre_name": "Ambala Cantt Grain Mandi", "location": "Jagadhri Road, Ambala", "daily_capacity": 60, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 34, "state": "Himachal Pradesh", "city": "Shimla", "centre_name": "Shimla Apple & Fruit APMC Mandi", "location": "Dhalli, Shimla", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 35, "state": "Himachal Pradesh", "city": "Solan", "centre_name": "Solan Tomato & Vegetable Terminal", "location": "Kandaghat Road, Solan", "daily_capacity": 65, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 36, "state": "Himachal Pradesh", "city": "Kullu", "centre_name": "Kullu Valley Fruit & Crop Yard", "location": "Bhuntar, Kullu", "daily_capacity": 55, "opening_time": "08:30:00", "closing_time": "16:30:00" },
+
+  { "centre_id": 37, "state": "Jharkhand", "city": "Ranchi", "centre_name": "Pandra Agriculture Market Yard", "location": "Pandra, Ranchi", "daily_capacity": 70, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 38, "state": "Jharkhand", "city": "Jamshedpur", "centre_name": "Jamshedpur APMC Krishi Bazar", "location": "Parsudih, Jamshedpur", "daily_capacity": 60, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 39, "state": "Jharkhand", "city": "Dhanbad", "centre_name": "Dhanbad Bazar Samiti Mandi", "location": "Govindpur Road, Dhanbad", "daily_capacity": 55, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 40, "state": "Karnataka", "city": "Bengaluru", "centre_name": "Yeshwanthpur APMC Market Yard", "location": "Yeshwanthpur, Bengaluru", "daily_capacity": 95, "opening_time": "07:30:00", "closing_time": "18:00:00" },
+  { "centre_id": 41, "state": "Karnataka", "city": "Mysuru", "centre_name": "Bandipalya APMC Market Yard", "location": "Bandipalya, Mysuru", "daily_capacity": 70, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 42, "state": "Karnataka", "city": "Hubballi", "centre_name": "Amargol APMC Cotton & Pulse Terminal", "location": "Amargol, Hubballi", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 43, "state": "Karnataka", "city": "Belagavi", "centre_name": "Belagavi Vegetable & Grain APMC", "location": "APMC Yard, Belagavi", "daily_capacity": 65, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 44, "state": "Karnataka", "city": "Kalaburagi", "centre_name": "Gulbarga Tur Dal APMC Mandi", "location": "Nehru Gunj, Kalaburagi", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 45, "state": "Karnataka", "city": "Shivamogga", "centre_name": "Shivamogga Arecanut & Paddy Mandi", "location": "APMC Yard, Shivamogga", "daily_capacity": 60, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 46, "state": "Kerala", "city": "Kochi", "centre_name": "Ernakulam Central Vegetable Market", "location": "Market Road, Ernakulam, Kochi", "daily_capacity": 65, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 47, "state": "Kerala", "city": "Thiruvananthapuram", "centre_name": "Chalai Agricultural Wholesale Mandi", "location": "Chalai, Thiruvananthapuram", "daily_capacity": 60, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 48, "state": "Kerala", "city": "Kozhikode", "centre_name": "Valayanad Agro Procurement Centre", "location": "Mankavu, Kozhikode", "daily_capacity": 55, "opening_time": "08:30:00", "closing_time": "16:30:00" },
+  { "centre_id": 49, "state": "Kerala", "city": "Wayanad", "centre_name": "Sulthan Bathery Spices & Coffee Depot", "location": "Sulthan Bathery, Wayanad", "daily_capacity": 50, "opening_time": "08:30:00", "closing_time": "16:30:00" },
+
+  { "centre_id": 50, "state": "Madhya Pradesh", "city": "Indore", "centre_name": "Devi Ahilya Bai Holkar APMC Mandi", "location": "Chowdhary Park, Indore", "daily_capacity": 95, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 51, "state": "Madhya Pradesh", "city": "Bhopal", "centre_name": "Karond Krishi Upaj Mandi", "location": "Karond, Bhopal", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 52, "state": "Madhya Pradesh", "city": "Ujjain", "centre_name": "Ujjain Grain & Soybean Mandi", "location": "Chimanganj Mandi, Ujjain", "daily_capacity": 85, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 53, "state": "Madhya Pradesh", "city": "Jabalpur", "centre_name": "Krishi Upaj Mandi Jabalpur", "location": "Vijay Nagar, Jabalpur", "daily_capacity": 70, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 54, "state": "Madhya Pradesh", "city": "Neemuch", "centre_name": "Neemuch Medicinal Plant & Grain Mandi", "location": "Mandi Road, Neemuch", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+
+  { "centre_id": 55, "state": "Maharashtra", "city": "Nashik", "centre_name": "Nashik APMC Mandi (District Hub)", "location": "Panchavati, Nashik", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 56, "state": "Maharashtra", "city": "Pune", "centre_name": "Pune Grain Procurement Centre", "location": "Gultekdi Market Yard, Pune", "daily_capacity": 85, "opening_time": "08:30:00", "closing_time": "17:30:00" },
+  { "centre_id": 57, "state": "Maharashtra", "city": "Nagpur", "centre_name": "Nagpur Cotton & Grain Terminal", "location": "Kalamna Market, Nagpur", "daily_capacity": 90, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 58, "state": "Maharashtra", "city": "Kolhapur", "centre_name": "Kolhapur Agro Mandi Centre", "location": "Shahupuri, Kolhapur", "daily_capacity": 60, "opening_time": "08:00:00", "closing_time": "16:30:00" },
+  { "centre_id": 59, "state": "Maharashtra", "city": "Amravati", "centre_name": "Amravati Regional Procurement Centre", "location": "Cotton Market Yard, Amravati", "daily_capacity": 65, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+  { "centre_id": 60, "state": "Maharashtra", "city": "Lasalgaon", "centre_name": "Lasalgaon Onion APMC Mandi", "location": "Lasalgaon, Niphad, Nashik", "daily_capacity": 100, "opening_time": "07:30:00", "closing_time": "18:00:00" },
+  { "centre_id": 61, "state": "Maharashtra", "city": "Navi Mumbai", "centre_name": "Vashi APMC Agricultural Market Complex", "location": "Sector 19, Vashi, Navi Mumbai", "daily_capacity": 100, "opening_time": "07:00:00", "closing_time": "18:00:00" },
+
+  { "centre_id": 62, "state": "Manipur", "city": "Imphal", "centre_name": "Khwairamband Bazar Agro Center", "location": "Thangal Bazar, Imphal", "daily_capacity": 40, "opening_time": "08:30:00", "closing_time": "16:30:00" },
+  { "centre_id": 63, "state": "Meghalaya", "city": "Shillong", "centre_name": "Iewduh Bara Bazar Agri Terminal", "location": "Bara Bazar, Shillong", "daily_capacity": 45, "opening_time": "08:00:00", "closing_time": "16:30:00" },
+  { "centre_id": 64, "state": "Mizoram", "city": "Aizawl", "centre_name": "Bawngkawn Agri Wholesale Depot", "location": "Bawngkawn, Aizawl", "daily_capacity": 35, "opening_time": "08:30:00", "closing_time": "16:00:00" },
+  { "centre_id": 65, "state": "Nagaland", "city": "Dimapur", "centre_name": "Dimapur Supermarket Agro Hub", "location": "Supermarket Area, Dimapur", "daily_capacity": 45, "opening_time": "08:00:00", "closing_time": "16:30:00" },
+
+  { "centre_id": 66, "state": "Odisha", "city": "Bhubaneswar", "centre_name": "Bhubaneswar Unit-1 Wholesale Agro Market", "location": "Unit 1, Bhubaneswar", "daily_capacity": 70, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 67, "state": "Odisha", "city": "Cuttack", "centre_name": "Malgodown Grain Mandi", "location": "Malgodown, Cuttack", "daily_capacity": 65, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 68, "state": "Odisha", "city": "Bargarh", "centre_name": "Bargarh Rice Bowl Procurement Centre", "location": "RMC Yard, Bargarh", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+
+  { "centre_id": 69, "state": "Punjab", "city": "Ludhiana", "centre_name": "Ludhiana New Grain Market", "location": "Gill Road, Ludhiana", "daily_capacity": 95, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 70, "state": "Punjab", "city": "Khanna", "centre_name": "Khanna Grain Market (Asia's Largest)", "location": "GT Road, Khanna", "daily_capacity": 100, "opening_time": "07:30:00", "closing_time": "18:30:00" },
+  { "centre_id": 71, "state": "Punjab", "city": "Amritsar", "centre_name": "Bhagtanwala Grain Market", "location": "Bhagtanwala, Amritsar", "daily_capacity": 85, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 72, "state": "Punjab", "city": "Bathinda", "centre_name": "Bathinda Cotton & Wheat Yard", "location": "Mansa Road, Bathinda", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 73, "state": "Punjab", "city": "Jalandhar", "centre_name": "Maqsudan Grain & Vegetable Mandi", "location": "Maqsudan, Jalandhar", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+
+  { "centre_id": 74, "state": "Rajasthan", "city": "Jaipur", "centre_name": "Muhana Mandi Terminal", "location": "Muhana Road, Sanganer, Jaipur", "daily_capacity": 95, "opening_time": "07:30:00", "closing_time": "18:00:00" },
+  { "centre_id": 75, "state": "Rajasthan", "city": "Jodhpur", "centre_name": "Mandore Grain & Cumin APMC", "location": "Mandore, Jodhpur", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 76, "state": "Rajasthan", "city": "Kota", "centre_name": "Bhamashah Krishi Upaj Mandi", "location": "Anantpura, Kota", "daily_capacity": 90, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 77, "state": "Rajasthan", "city": "Sri Ganganagar", "centre_name": "Sri Ganganagar Wheat & Mustard Hub", "location": "Dhan Mandi, Sri Ganganagar", "daily_capacity": 85, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+
+  { "centre_id": 78, "state": "Sikkim", "city": "Gangtok", "centre_name": "Kanchendzonga Organic Farm Terminal", "location": "Lall Market, Gangtok", "daily_capacity": 35, "opening_time": "08:30:00", "closing_time": "16:00:00" },
+
+  { "centre_id": 79, "state": "Tamil Nadu", "city": "Chennai", "centre_name": "Koyambedu Wholesale Agro Complex", "location": "Koyambedu, Chennai", "daily_capacity": 100, "opening_time": "07:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 80, "state": "Tamil Nadu", "city": "Madurai", "centre_name": "Mattuthavani Agro Market", "location": "Mattuthavani, Madurai", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 81, "state": "Tamil Nadu", "city": "Coimbatore", "centre_name": "MGR Wholesale Vegetable Market", "location": "Saibaba Colony, Coimbatore", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 82, "state": "Tamil Nadu", "city": "Erode", "centre_name": "Erode Turmeric & Agro Market Complex", "location": "Semmampalayam, Erode", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 83, "state": "Tamil Nadu", "city": "Salem", "centre_name": "Salem Mango & Grain Mandi", "location": "Shevapet, Salem", "daily_capacity": 65, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 84, "state": "Telangana", "city": "Hyderabad", "centre_name": "Bowenpally Agricultural Market Yard", "location": "Secunderabad, Hyderabad", "daily_capacity": 90, "opening_time": "07:30:00", "closing_time": "18:00:00" },
+  { "centre_id": 85, "state": "Telangana", "city": "Warangal", "centre_name": "Enumamula Cotton & Grain Mandi", "location": "Enumamula, Warangal", "daily_capacity": 95, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 86, "state": "Telangana", "city": "Nizamabad", "centre_name": "Nizamabad Turmeric & Paddy Mandi", "location": "Market Yard, Nizamabad", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 87, "state": "Telangana", "city": "Khammam", "centre_name": "Khammam Chilli & Corn Market Yard", "location": "Khammam Town", "daily_capacity": 70, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 88, "state": "Tripura", "city": "Agartala", "centre_name": "Golbazar Wholesale Agriculture Market", "location": "Golbazar, Agartala", "daily_capacity": 45, "opening_time": "08:00:00", "closing_time": "16:30:00" },
+
+  { "centre_id": 89, "state": "Uttar Pradesh", "city": "Lucknow", "centre_name": "Dubagga Vegetable & Mango Mandi", "location": "Hardoi Road, Lucknow", "daily_capacity": 95, "opening_time": "07:30:00", "closing_time": "18:00:00" },
+  { "centre_id": 90, "state": "Uttar Pradesh", "city": "Kanpur", "centre_name": "Chakeri APMC Grain Market", "location": "Chakeri, Kanpur", "daily_capacity": 85, "opening_time": "08:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 91, "state": "Uttar Pradesh", "city": "Varanasi", "centre_name": "Pahariya Mandi Samiti", "location": "Pahariya, Varanasi", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 92, "state": "Uttar Pradesh", "city": "Agra", "centre_name": "Kuberpur Potato & Grain Mandi", "location": "Kuberpur, Agra", "daily_capacity": 85, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 93, "state": "Uttar Pradesh", "city": "Meerut", "centre_name": "Meerut New Mandi Samiti", "location": "Delhi Road, Meerut", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 94, "state": "Uttar Pradesh", "city": "Bareilly", "centre_name": "Bareilly Delapeer Mandi", "location": "Delapeer, Bareilly", "daily_capacity": 70, "opening_time": "08:30:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 95, "state": "Uttarakhand", "city": "Dehradun", "centre_name": "Niranjanpur Mandi Samiti", "location": "Saharanpur Road, Dehradun", "daily_capacity": 70, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 96, "state": "Uttarakhand", "city": "Haldwani", "centre_name": "Haldwani Fruit & Vegetable Mandi", "location": "Bareilly Road, Haldwani", "daily_capacity": 65, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 97, "state": "West Bengal", "city": "Kolkata", "centre_name": "Posta Bazar Wholesale Grain Mandi", "location": "Posta, Burrabazar, Kolkata", "daily_capacity": 95, "opening_time": "07:30:00", "closing_time": "18:00:00" },
+  { "centre_id": 98, "state": "West Bengal", "city": "Siliguri", "centre_name": "Siliguri Regulated Market Yard", "location": "Champasari, Siliguri", "daily_capacity": 80, "opening_time": "08:00:00", "closing_time": "17:30:00" },
+  { "centre_id": 99, "state": "West Bengal", "city": "Bardhaman", "centre_name": "Burdwan Rice & Potato Mandi", "location": "Alisha, Bardhaman", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 100, "state": "Delhi (NCT)", "city": "New Delhi", "centre_name": "Azadpur Mandi (National Capital Hub)", "location": "Azadpur, New Delhi", "daily_capacity": 100, "opening_time": "07:00:00", "closing_time": "19:00:00" },
+  { "centre_id": 101, "state": "Delhi (NCT)", "city": "New Delhi", "centre_name": "Ghazipur Fruit & Vegetable Mandi", "location": "Ghazipur, East Delhi", "daily_capacity": 85, "opening_time": "07:00:00", "closing_time": "18:00:00" },
+  { "centre_id": 102, "state": "Delhi (NCT)", "city": "New Delhi", "centre_name": "Narela Food Grain Terminal", "location": "Narela, North Delhi", "daily_capacity": 90, "opening_time": "07:30:00", "closing_time": "18:00:00" },
+
+  { "centre_id": 103, "state": "Jammu & Kashmir", "city": "Srinagar", "centre_name": "Parimpora Fruit & Agro Mandi", "location": "Parimpora, Srinagar", "daily_capacity": 75, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+  { "centre_id": 104, "state": "Jammu & Kashmir", "city": "Jammu", "centre_name": "Narwal Agricultural Market Yard", "location": "Narwal, Jammu", "daily_capacity": 70, "opening_time": "08:00:00", "closing_time": "17:00:00" },
+
+  { "centre_id": 105, "state": "Chandigarh", "city": "Chandigarh", "centre_name": "Sector 26 Grain & Vegetable Market", "location": "Sector 26, Chandigarh", "daily_capacity": 70, "opening_time": "07:30:00", "closing_time": "17:30:00" }
+]

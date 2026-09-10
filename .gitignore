@@ -1,0 +1,34 @@
+# Dependency directories
+node_modules/
+
+# Environment variables & secrets (CRITICAL: Do NOT commit real secrets)
+.env
+.env.*
+!.env.example
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & editor temporary files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary directories
+tmp/
+temp/
+
+# SQLite Database and local database files
+agriconnect.db
+*.db
+*.sqlite
+*.sqlite3

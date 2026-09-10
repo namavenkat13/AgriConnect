@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mandi Operations Desk — AgriConnect</title>
+  <link rel="stylesheet" href="css/style.css?v=2.3">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏢</text></svg>">
+  <script src="js/theme.js"></script>
+  <script src="js/ist-clock.js"></script>
+</head>
+<body>
+
+  <!-- Mandi Operations Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-group" style="display: flex; align-items: center; gap: 1.25rem;">
+        <span class="brand-icon">
+          <svg class="op-icon op-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M9 10h1"></path><path d="M9 14h1"></path><path d="M14 10h1"></path><path d="M14 14h1"></path><path d="M9 21v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path></svg>
+        </span>
+        <div>
+          <span class="brand-title">Mandi Desk · APMC Yard</span>
+          <span class="brand-subtitle" id="header-centre-name">Loading procurement centre...</span>
+        </div>
+        <div class="header-live-clock" title="Live India Standard Time (Asia/Kolkata)">
+          <span class="live-clock-badge"><span class="live-clock-pulse"></span>IST</span>
+          <span class="live-clock-time">--:--:--</span>
+          <span class="live-clock-date">-- --- ----</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <span id="role-badge-container"></span>
+        <span class="user-greeting" id="staff-name-display" style="font-weight: 600;">Staff</span>
+
+        <button class="theme-toggle-btn" onclick="AgriTheme.toggleTheme()" aria-label="Toggle theme">
+          <span class="btn-icon">🌙</span> <span>Dark Mode</span>
+        </button>
+
+        <button class="btn btn-secondary btn-sm" onclick="AgriAuth.logout()">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+    <div class="dashboard-container">
+
+      <!-- Admin Actions Toolbar (Visible only to mandi_admin) -->
+      <div class="dashboard-card" id="admin-toolbar" style="display: none; margin-bottom: 1.5rem; background: var(--bg-card-alt); border-left: 4px solid var(--gold);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.6rem;">
+              <span class="title-icon">
+                <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </span>
+              <span>Mandi Administration Controls</span>
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Manage staff accounts, edit hourly slot capacity, and oversee procurement operations.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="openStaffModal()" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span class="btn-icon">
+                <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </span>
+              <span>Mandi Staff Directory (<span id="staff-count">0</span>)</span>
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="openAddMemberModal()" style="background: var(--primary-dark); display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span class="btn-icon">
+                <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+              </span>
+              <span>Add Mandi Member</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date & Action Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--text-main); display: inline-flex; align-items: center; gap: 0.5rem;">
+            <span class="title-icon">
+              <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </span>
+            <span>Live Slot Grid</span>
+          </h2>
+          <input type="date" id="slot-grid-date" class="form-input" style="width: auto; padding: 0.35rem 0.6rem; font-size: 0.9rem;" />
+          <button class="btn btn-secondary btn-sm" onclick="loadMandiSlots()" title="Refresh slots" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+            <span class="btn-icon">
+              <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            </span>
+            <span>Refresh</span>
+          </button>
+        </div>
+
+        <div>
+          <button class="btn btn-primary" onclick="openWalkinModal()" style="display: inline-flex; align-items: center; gap: 0.45rem;">
+            <span class="btn-icon">
+              <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2"></circle><path d="m9 20 3-6 3 2 2 4"></path><path d="m6 16 3-3 2 2 3-5-2-4"></path></svg>
+            </span>
+            <span>Register Walk-in (Offline) Farmer</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mandi Operations Timeline Board -->
+      <div class="mandi-timeline-board">
+        <div class="timeline-board-header">
+          <div class="timeline-board-title">
+            <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Hourly Operations Board</span>
+          </div>
+          <div class="timeline-legend">
+            <span class="legend-item" title="Open and unbooked slot">
+              <span class="legend-swatch swatch-empty"></span>
+              <span>Open (Unbooked)</span>
+            </span>
+            <span class="legend-item" title="Partially filled or 1 walk-in taken">
+              <span class="legend-swatch swatch-partial"></span>
+              <span>Partial (1 Walk-in)</span>
+            </span>
+            <span class="legend-item" title="Capacity or Walk-in limit reached">
+              <span class="legend-swatch swatch-full"></span>
+              <span>Full (Maxed)</span>
+            </span>
+            <span class="legend-item" title="Slot cutoff time has passed">
+              <span class="legend-swatch swatch-closed"></span>
+              <span>Closed (Past Cutoff)</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Live Slot Grid Container -->
+        <div id="mandi-slot-grid" class="mandi-slot-grid timeline-grid">
+          <div style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: var(--text-muted);">
+            Loading live slot grid...
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Slot Bookings Section -->
+      <div class="dashboard-card" id="slot-bookings-container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem; color: var(--primary-dark);" id="selected-slot-title">
+              Bookings for Slot
+            </h3>
+            <div style="font-size: 0.85rem; color: var(--text-muted);" id="selected-slot-subtitle">
+              Select any booking to open the Procurement & Payment Workflow.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem;" id="slot-admin-actions">
+            <!-- Edit slot button injected if admin -->
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="slot-bookings-table">
+            <thead>
+              <tr>
+                <th>Queue #</th>
+                <th>Farmer Name & Phone</th>
+                <th>Crop & Quantity</th>
+                <th>Channel</th>
+                <th>Approval</th>
+                <th>Procurement Status</th>
+                <th>Payment</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="slot-bookings-tbody">
+              <!-- Bookings injected here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL 1: Walk-in Offline Booking Modal -->
+  <div class="modal-backdrop modal-overlay" id="walkin-modal">
+    <div class="modal-box modal-content" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 style="margin: 0; font-size: 1.2rem; color: var(--primary-dark); display: flex; align-items: center; gap: 0.5rem;">
+          <span class="title-icon">
+            <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2"></circle><path d="m9 20 3-6 3 2 2 4"></path><path d="m6 16 3-3 2 2 3-5-2-4"></path></svg>
+          </span>
+          <span>Add Walk-in (Offline) Booking</span>
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeWalkinModal()" aria-label="Close">
+          <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="walkin-form" class="modal-form">
+        <div class="modal-body">
+          <div style="background: var(--alert-warn-bg); border: 1px solid var(--alert-warn-border); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--alert-warn-text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span class="demo-icon">
+              <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </span>
+            <div><strong>Strict Rule:</strong> Walk-in registrations are capped at <strong>max 2 per slot</strong>. 3rd attempt will be blocked.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="walkin-farmer-name">Farmer Name *</label>
+            <input type="text" id="walkin-farmer-name" class="form-input" placeholder="e.g. Baburao Patil" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="walkin-farmer-phone">Mobile Number (10 Digits) *</label>
+            <input type="tel" id="walkin-farmer-phone" class="form-input" placeholder="e.g. 9822334455" required maxlength="10">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="walkin-crop">Crop Name *</label>
+            <input type="text" id="walkin-crop" class="form-input" placeholder="e.g. Tomato (Hybrid), Wheat" list="mandi-crops-datalist" required>
+            <datalist id="mandi-crops-datalist">
+              <option value="Wheat (Sharbati)">
+              <option value="Paddy (Basmati)">
+              <option value="Tomato (Hybrid)">
+              <option value="Onion (Red Nashik)">
+              <option value="Potato (Jyoti)">
+              <option value="Cotton (Medium Staple)">
+              <option value="Soybean (Yellow)">
+              <option value="Maize (Kharif)">
+              <option value="Mustard (Black)">
+              <option value="Green Gram (Moong)">
+              <option value="Sugarcane">
+              <option value="Red Chilli (Guntur)">
+              <option value="Gram (Chana / Chickpea)">
+              <option value="Tur Dal (Arhar / Pigeon Pea)">
+              <option value="Groundnut (Peanut)">
+              <option value="Turmeric (Haldi)">
+              <option value="Cumin Seeds (Jeera)">
+              <option value="Banana (Robusta)">
+              <option value="Apple (Royal Delicious)">
+              <option value="Mango (Alphonso / Kesar)">
+              <option value="Jute (Raw Jute)">
+              <option value="Tea (Assam Green Leaf)">
+              <option value="Arecanut (Supari)">
+              <option value="Coffee (Arabica / Robusta)">
+              <option value="Garlic (Lahsun)">
+              <option value="Ginger (Adrak)">
+              <option value="Barley (Jau)">
+              <option value="Jowar (Sorghum)">
+              <option value="Bajra (Pearl Millet)">
+              <option value="Litchi (Shahi)">
+            </datalist>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="walkin-qty">Estimated Quantity (kg) *</label>
+            <input type="number" id="walkin-qty" class="form-input" placeholder="e.g. 500" min="1" step="any" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="walkin-slot-select">Select Slot for Walk-in *</label>
+            <select id="walkin-slot-select" class="form-select" required>
+              <option value="">Choose slot...</option>
+            </select>
+          </div>
+
+          <div id="walkin-error-msg" class="modal-error-banner" style="display: none;"></div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="modal-footer-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeWalkinModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="walkin-submit-btn">Save Walk-in Booking →</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Per-Booking Workflow Panel -->
+  <div class="modal-backdrop modal-overlay" id="workflow-modal">
+    <div class="modal-box modal-content" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text);" id="workflow-title">
+          Procurement & Settlement Workflow
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeWorkflowModal()" aria-label="Close">
+          <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="workflow-form" class="modal-form">
+        <div class="modal-body">
+          <!-- 1. Requirements & Details -->
+          <div class="workflow-section">
+            <div class="workflow-section-title">
+              <span class="title-icon">
+                <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              </span>
+              <span>1. Farmer & Booking Specifications</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; font-size: 0.88rem;">
+              <div><strong>Farmer:</strong> <span id="wf-farmer-name">-</span></div>
+              <div><strong>Phone:</strong> <span id="wf-farmer-phone">-</span></div>
+              <div><strong>Crop:</strong> <span id="wf-crop-name">-</span></div>
+              <div><strong>Estimated Qty:</strong> <span id="wf-est-qty">-</span> kg</div>
+              <div><strong>Slot Time:</strong> <span id="wf-slot-time">-</span></div>
+              <div><strong>Channel:</strong> <span id="wf-channel-badge"></span></div>
+            </div>
+          </div>
+
+          <!-- 2. Procurement Section -->
+          <div class="workflow-section">
+            <div class="workflow-section-title">
+              <span class="title-icon">
+                <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h18"></path></svg>
+              </span>
+              <span>2. Physical Inspection & Quality Grading</span>
+            </div>
+            <div class="modal-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label" for="wf-actual-qty">Actual Weighed Quantity (kg) *</label>
+                <input type="number" id="wf-actual-qty" class="form-input" step="0.01" min="0.1" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="wf-grade">Quality Grade *</label>
+                <select id="wf-grade" class="form-select" required>
+                  <option value="Grade A">Grade A (Premium Quality)</option>
+                  <option value="Grade B" selected>Grade B (Standard Market)</option>
+                  <option value="Grade C">Grade C (Fair / Commercial)</option>
+                  <option value="Rejected">Rejected (Substandard)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="wf-price">Agreed Price per Unit (₹ / kg) *</label>
+              <input type="number" id="wf-price" class="form-input" step="0.01" min="0.1" required>
+              <div class="form-help">Pre-filled from today's benchmark mandi rate. Editable upon mutual agreement.</div>
+            </div>
+          </div>
+
+          <!-- 3. Payment Section -->
+          <div class="workflow-section">
+            <div class="workflow-section-title">
+              <span class="title-icon">
+                <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              </span>
+              <span>3. Payment Mode & Settlement</span>
+            </div>
+            <div class="modal-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label" for="wf-pay-mode">Payment Mode *</label>
+                <select id="wf-pay-mode" class="form-select" required onchange="handlePaymentModeChange()">
+                  <option value="Cash">Cash</option>
+                  <option value="UPI">UPI (QR / PhonePe / GPay)</option>
+                  <option value="Bank Transfer">Direct Bank Transfer (NEFT / RTGS)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="wf-pay-status">Payment Status *</label>
+                <select id="wf-pay-status" class="form-select" required>
+                  <option value="Paid">Paid (Immediate)</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Pending">Pending (Disbursal Queue)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" id="wf-txn-group" style="display: none;">
+              <label class="form-label" for="wf-txn-ref">Transaction Reference / UTR Number *</label>
+              <input type="text" id="wf-txn-ref" class="form-input" placeholder="e.g. UPI-9812034981 or UTR-HDFC-99120">
+            </div>
+          </div>
+
+          <!-- 4. Final Amount & Confirmation -->
+          <div class="workflow-section">
+            <div class="workflow-section-title">
+              <span class="title-icon">
+                <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </span>
+              <span>4. Final Amount & Verification</span>
+            </div>
+
+            <div class="auto-calc-box">
+              <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Auto-calculated (Qty × Rate):</div>
+                <div style="font-weight: 700; font-size: 1.1rem;" id="wf-calculated-display">₹ 0.00</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Final Payout Amount:</div>
+                <div class="auto-calc-amount" id="wf-final-display">₹ 0.00</div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+              <label class="form-label" for="wf-final-amount">Final Amount Override (₹)</label>
+              <input type="number" id="wf-final-amount" class="form-input" step="0.01" min="0.1" required>
+              <div class="form-help">Edit only if manual adjustment is needed for moisture, cleaning, or labor charges.</div>
+            </div>
+
+            <div class="form-group" id="wf-adjustment-group" style="display: none;">
+              <label class="form-label" for="wf-adjustment-reason" style="color: var(--danger);">
+                Adjustment Reason * (Mandatory when amount differs from Qty × Rate)
+              </label>
+              <input type="text" id="wf-adjustment-reason" class="form-input" placeholder="e.g. Moisture deduction 3%, cleaning charge ₹50">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div id="wf-error-msg" class="modal-error-banner" style="display: none;"></div>
+          <div class="modal-footer-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeWorkflowModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="wf-accept-btn" style="background: var(--primary-dark); font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem;">
+              <span class="btn-icon">
+                <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </span>
+              <span>Accept & Generate Official Receipt →</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Edit Slot Capacity & Time (mandi_admin only) -->
+  <div class="modal-backdrop modal-overlay" id="edit-slot-modal">
+    <div class="modal-box modal-content" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 style="margin: 0; font-size: 1.2rem; color: var(--primary-dark); display: flex; align-items: center; gap: 0.5rem;">
+          <span class="title-icon">
+            <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+          </span>
+          <span>Edit Slot Configuration</span>
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeEditSlotModal()" aria-label="Close">
+          <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="edit-slot-form" class="modal-form">
+        <div class="modal-body">
+          <div style="background: var(--alert-success-bg); border: 1px solid var(--alert-success-border); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--alert-success-text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span class="demo-icon">
+              <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            </span>
+            <div><strong>Capacity Floor Rule:</strong> You cannot lower capacity below currently booked farmers (<span id="edit-slot-current-booked">0</span>).</div>
+          </div>
+
+          <input type="hidden" id="edit-slot-id">
+
+          <div class="form-group">
+            <label class="form-label" for="edit-slot-start">Start Time (HH:MM:SS)</label>
+            <input type="text" id="edit-slot-start" class="form-input" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-slot-end">End Time (HH:MM:SS)</label>
+            <input type="text" id="edit-slot-end" class="form-input" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="edit-slot-capacity">Max Bookings Capacity *</label>
+            <input type="number" id="edit-slot-capacity" class="form-input" min="1" required>
+          </div>
+
+          <div id="edit-slot-error" class="modal-error-banner" style="display: none;"></div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="modal-footer-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeEditSlotModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="edit-slot-submit-btn">Save Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Add Mandi Member (mandi_admin only) -->
+  <div class="modal-backdrop modal-overlay" id="add-member-modal">
+    <div class="modal-box modal-content" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 style="margin: 0; font-size: 1.2rem; color: var(--primary-dark); display: flex; align-items: center; gap: 0.5rem;">
+          <span class="title-icon">
+            <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+          </span>
+          <span>Add Mandi Member</span>
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeAddMemberModal()" aria-label="Close">
+          <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="add-member-form" class="modal-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="member-name">Staff Full Name *</label>
+            <input type="text" id="member-name" class="form-input" placeholder="e.g. Suresh Verma" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="member-phone">Mobile Number (10 Digits) *</label>
+            <input type="tel" id="member-phone" class="form-input" placeholder="e.g. 9822119900" maxlength="10" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="member-password">Account Password *</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="member-password" class="form-input" placeholder="At least 6 characters" minlength="6" required>
+              <button type="button" class="password-toggle-btn" data-target="member-password" aria-label="Show password" title="Show password">
+                <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="member-role">Assign Role</label>
+            <select id="member-role" class="form-select">
+              <option value="mandi_member">Mandi Member (Standard Operations)</option>
+              <option value="mandi_admin">Mandi Admin (Full Rights)</option>
+            </select>
+          </div>
+
+          <div id="add-member-error" class="modal-error-banner" style="display: none;"></div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="modal-footer-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeAddMemberModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="add-member-submit-btn">Create Staff Account</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 5: Mandi Staff Directory -->
+  <div class="modal-backdrop modal-overlay" id="staff-directory-modal">
+    <div class="modal-box modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 style="margin: 0; font-size: 1.2rem; color: var(--primary-dark); display: flex; align-items: center; gap: 0.5rem;">
+          <span class="title-icon">
+            <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </span>
+          <span>Mandi Staff Directory</span>
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeStaffModal()" aria-label="Close">
+          <svg class="op-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Role</th>
+                <th>Added On</th>
+              </tr>
+            </thead>
+            <tbody id="staff-directory-tbody">
+              <!-- Staff rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="modal-footer-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeStaffModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>AgriConnect Mandi Operations Desk</strong> • National APMC Network
+      </div>
+      <div>
+        <a href="/index.html">Live Mandi Rates</a> • <a href="/dashboard.html">Farmer Portal</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/auth.js?v=2.3"></script>
+  <script src="js/receipt.js?v=2.2"></script>
+  <script src="js/mandi.js?v=2.2"></script>
+
+</body>
+</html>
