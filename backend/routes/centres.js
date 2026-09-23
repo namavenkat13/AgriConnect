@@ -55,16 +55,20 @@ router.get('/states', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const { state, city } = req.query;
-    let sql = 'SELECT * FROM procurement_centres';
+    let sql = `
+      SELECT pc.*, 
+        EXISTS(SELECT 1 FROM centre_staff cs WHERE cs.centre_id = pc.centre_id AND cs.role = 'mandi_admin') as is_claimed
+      FROM procurement_centres pc
+    `;
     const params = [];
     const conditions = [];
 
     if (state) {
-      conditions.push('state = ?');
+      conditions.push('pc.state = ?');
       params.push(state);
     }
     if (city) {
-      conditions.push('city = ?');
+      conditions.push('pc.city = ?');
       params.push(city);
     }
 
@@ -72,9 +76,13 @@ router.get('/', async (req, res) => {
       sql += ' WHERE ' + conditions.join(' AND ');
     }
 
-    sql += ' ORDER BY state ASC, city ASC, centre_name ASC';
+    sql += ' ORDER BY pc.state ASC, pc.city ASC, pc.centre_name ASC';
 
-    const centres = await db.query(sql, params);
+    const rawCentres = await db.query(sql, params);
+    const centres = rawCentres.map(c => ({
+      ...c,
+      is_claimed: Boolean(c.is_claimed)
+    }));
     res.json({ success: true, total: centres.length, centres });
   } catch (err) {
     console.error('Error fetching centres:', err);

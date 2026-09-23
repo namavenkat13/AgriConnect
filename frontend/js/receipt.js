@@ -132,7 +132,8 @@
     curY += 34;
     drawSectionHeader('2. PROCUREMENT & INSPECTION', curY);
     curY += 24;
-    drawKeyValueRow('Crop Procured:', data.crop_name || '-', curY, false, true);
+    const displayCrop = (window.AgriLang && typeof window.AgriLang.tCrop === 'function') ? window.AgriLang.tCrop(data.crop_name) : (data.crop_name || '-');
+    drawKeyValueRow('Crop Procured:', displayCrop, curY, false, true);
     curY += 22;
     drawKeyValueRow('Actual Net Quantity:', `${Number(data.actual_quantity_kg || 0).toFixed(2)} kg`, curY, true);
     curY += 22;
@@ -275,7 +276,7 @@
         <div class="modal-box modal-content" style="max-width: 660px;">
           <div class="modal-header">
             <h3 style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
-              <span class="title-icon">📄</span> <span>Official Procurement Receipt</span>
+              <span class="title-icon">📄</span> <span data-i18n="receipt_modal_title">Official Procurement Receipt</span>
             </h3>
             <button type="button" class="btn btn-secondary btn-sm" onclick="AgriReceipt.closeReceiptModal()" aria-label="Close">✕</button>
           </div>
@@ -289,12 +290,12 @@
           </div>
           <div class="modal-footer">
             <div class="modal-footer-actions">
-              <button type="button" class="btn btn-secondary" onclick="AgriReceipt.closeReceiptModal()">Close</button>
+              <button type="button" class="btn btn-secondary" onclick="AgriReceipt.closeReceiptModal()"><span data-i18n="btn_close">Close</span></button>
               <button type="button" class="btn btn-secondary" id="receipt-modal-print-btn">
-                <span class="btn-icon">🖨️</span> <span>Print</span>
+                <span class="btn-icon">🖨️</span> <span data-i18n="btn_print">Print</span>
               </button>
               <button type="button" class="btn btn-primary" id="receipt-modal-download-btn">
-                <span class="btn-icon">⬇️</span> <span>Download PNG</span>
+                <span class="btn-icon">⬇️</span> <span data-i18n="btn_download_png">Download PNG</span>
               </button>
             </div>
           </div>
@@ -314,12 +315,13 @@
 
     const sourceBadge = document.getElementById('receipt-source-badge');
     if (sourceBadge) {
+      const t = (k, fb) => (window.AgriLang ? AgriLang.t(k, fb) : fb);
       if (source === 'gemini') {
         sourceBadge.className = 'badge-channel badge-channel-online';
-        sourceBadge.innerHTML = '<span class="badge-icon">✨</span> <span>Gemini AI Generated Receipt</span>';
+        sourceBadge.innerHTML = `<span class="badge-icon">✨</span> <span data-i18n="receipt_badge_gemini">${t('receipt_badge_gemini', 'Gemini AI Generated Receipt')}</span>`;
       } else {
         sourceBadge.className = 'badge-channel badge-channel-offline';
-        sourceBadge.innerHTML = '<span class="badge-icon">📄</span> <span>Verified Mandi Receipt (Canvas)</span>';
+        sourceBadge.innerHTML = `<span class="badge-icon">📄</span> <span data-i18n="receipt_badge_verified">${t('receipt_badge_verified', 'Verified Mandi Receipt (Canvas)')}</span>`;
       }
     }
 
@@ -337,6 +339,10 @@
       };
     }
 
+    if (window.AgriLang && typeof window.AgriLang.translatePage === 'function') {
+      window.AgriLang.translatePage();
+    }
+
     modal.classList.add('active');
     syncReceiptBodyLock();
   }
@@ -346,6 +352,13 @@
     if (modal) modal.classList.remove('active');
     syncReceiptBodyLock();
   }
+
+  window.addEventListener('languageChanged', () => {
+    const modal = document.getElementById('receipt-modal');
+    if (modal && modal.classList.contains('active') && window.AgriLang && typeof window.AgriLang.translatePage === 'function') {
+      window.AgriLang.translatePage();
+    }
+  });
 
   window.AgriReceipt = {
     generateReceiptCanvas,

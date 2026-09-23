@@ -3,6 +3,55 @@
 
 let activeSocket = null;
 let currentActiveBooking = null;
+let queuePollTimer = null;
+let notifPollTimer = null;
+
+/**
+ * Start smart polling fallback when WebSocket is unavailable or disconnected
+ * Queue: ~7 seconds | Notifications: ~15 seconds
+ */
+function startSmartPolling() {
+  if (queuePollTimer || notifPollTimer) return; // already active
+
+  // Queue polling (~7s)
+  queuePollTimer = setInterval(async () => {
+    if (currentActiveBooking && currentActiveBooking.centre_id) {
+      try {
+        const res = await fetch(`/api/queue/${currentActiveBooking.centre_id}/today`);
+        const data = await res.json();
+        if (data.success && typeof data.now_serving_number === 'number') {
+          updateQueueDisplay(data.now_serving_number);
+        }
+      } catch (e) {
+        // Silently ignore transient network poll errors
+      }
+    }
+  }, 7000);
+
+  // Notifications polling (15s)
+  notifPollTimer = setInterval(async () => {
+    try {
+      await loadNotifications();
+      // Periodically refresh active booking in case status progressed (procurement / payment)
+      if (window.AgriBooking && typeof window.AgriBooking.loadMyBookingsTable === 'function') {
+        window.AgriBooking.loadMyBookingsTable();
+      }
+    } catch (e) {
+      // Silently ignore transient network poll errors
+    }
+  }, 15000);
+}
+
+function stopSmartPolling() {
+  if (queuePollTimer) {
+    clearInterval(queuePollTimer);
+    queuePollTimer = null;
+  }
+  if (notifPollTimer) {
+    clearInterval(notifPollTimer);
+    notifPollTimer = null;
+  }
+}
 
 /**
  * Initialize Farmer Queue & Notification System
@@ -12,32 +61,58 @@ async function initFarmerQueueAndNotifications() {
   const user = AgriAuth.getStoredUser();
   if (!token || !user) return;
 
-  // Initialize Socket.IO connection
+  // Initialize Socket.IO connection with fallback
   if (typeof io !== 'undefined') {
-    activeSocket = io();
+    try {
+      activeSocket = io({
+        timeout: 4000,
+        reconnectionAttempts: 3,
+        transports: ['websocket', 'polling']
+      });
 
-    activeSocket.on('connect', () => {
-      // Join targeted user room for personal alerts
-      activeSocket.emit('join_user', user.user_id);
-    });
+      activeSocket.on('connect', () => {
+        // Connected to real-time WebSockets: disable polling
+        stopSmartPolling();
+        activeSocket.emit('join_user', user.user_id);
+      });
 
-    // Handle targeted notifications (SMS / status alerts)
-    activeSocket.on('notification', (notifData) => {
-      AgriAuth.showToast(notifData.message, 'alert');
-      // Increment unread count & refresh drawer
-      loadNotifications();
-      // Also refresh bookings table in case procurement/payment status changed
-      if (window.AgriBooking && typeof window.AgriBooking.loadMyBookingsTable === 'function') {
-        window.AgriBooking.loadMyBookingsTable();
-      }
-    });
+      activeSocket.on('connect_error', () => {
+        // WebSocket unavailable (e.g. Vercel Serverless): fall back to smart polling
+        startSmartPolling();
+      });
 
-    // Handle real-time queue advancements
-    activeSocket.on('queue_update', (data) => {
-      if (currentActiveBooking && Number(data.centre_id) === Number(currentActiveBooking.centre_id)) {
-        updateQueueDisplay(data.now_serving_number);
-      }
-    });
+      activeSocket.on('disconnect', () => {
+        // Connection dropped: fall back to smart polling
+        startSmartPolling();
+      });
+
+      // Handle targeted notifications (SMS / status alerts)
+      activeSocket.on('notification', (notifData) => {
+        AgriAuth.showToast(notifData.message, 'alert');
+        loadNotifications();
+        if (window.AgriBooking && typeof window.AgriBooking.loadMyBookingsTable === 'function') {
+          window.AgriBooking.loadMyBookingsTable();
+        }
+      });
+
+      // Handle real-time queue advancements
+      activeSocket.on('queue_update', (data) => {
+        if (currentActiveBooking && Number(data.centre_id) === Number(currentActiveBooking.centre_id)) {
+          updateQueueDisplay(data.now_serving_number);
+        }
+      });
+
+      // If socket has not connected after 3.5s, initiate polling immediately
+      setTimeout(() => {
+        if (!activeSocket || !activeSocket.connected) {
+          startSmartPolling();
+        }
+      }, 3500);
+    } catch (sockErr) {
+      startSmartPolling();
+    }
+  } else {
+    startSmartPolling();
   }
 
   // Load active booking and notifications
@@ -70,6 +145,8 @@ async function checkActiveTodayQueue() {
     );
 
     if (!currentActiveBooking) {
+      const t = (k, f) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, f) : f);
+
       // Check if there is an upcoming booking tomorrow or future
       const nextBooking = data.bookings.find(b => b.booking_status === 'booked' && b.slot_date >= todayStr);
 
@@ -79,15 +156,15 @@ async function checkActiveTodayQueue() {
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
               <div>
                 <h3 style="color: var(--primary-dark); margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
-                  <span class="title-icon">📅</span> <span>Upcoming Booking Confirmed</span>
+                  <span class="title-icon">📅</span> <span>${t('queue_upcoming_confirmed', 'Upcoming Booking Confirmed')}</span>
                 </h3>
                 <p style="color: var(--text-muted); font-size: 0.95rem;">
                   <strong>${nextBooking.centre_name}</strong> on <strong>${(window.AgriTime && window.AgriTime.formatDisplayDate(nextBooking.slot_date)) || nextBooking.slot_date}</strong> at <strong>${nextBooking.slot_time.substring(0, 5)}</strong> for <strong>${nextBooking.crop_name}</strong>.
                 </p>
               </div>
               <div style="text-align: right;">
-                <span class="badge badge-booked" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">Queue Token #${nextBooking.queue_number}</span>
-                <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.3rem;">Live tracker activates on day of visit</p>
+                <span class="badge badge-booked" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">${t('queue_token_label', 'Queue Token')} #${nextBooking.queue_number}</span>
+                <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.3rem;">${t('queue_live_tracker_day_of_visit', 'Live tracker activates on day of visit')}</p>
               </div>
             </div>
           </div>
@@ -96,9 +173,9 @@ async function checkActiveTodayQueue() {
         widgetContainer.innerHTML = `
           <div class="card" style="background: var(--bg-card-alt); border: 1px dashed var(--border-color); text-align: center; padding: 2rem; margin-bottom: 2rem;">
             <div style="margin-bottom: 0.5rem;"><span class="crop-icon" style="font-size: 2.2rem;">🌾</span></div>
-            <h3 style="color: var(--primary-dark); margin-bottom: 0.3rem;">No Active Queue Today</h3>
+            <h3 style="color: var(--primary-dark); margin-bottom: 0.3rem;">${t('queue_no_active', 'No Active Queue Today')}</h3>
             <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 500px; margin: 0 auto;">
-              Select a procurement centre and book a slot below to receive your real-time queue position token.
+              ${t('queue_no_active_desc', 'Select a procurement centre and book a slot below to receive your real-time queue position token.')}
             </p>
           </div>
         `;
@@ -129,6 +206,7 @@ function renderActiveQueueWidget(nowServing) {
   const widgetContainer = document.getElementById('queue-widget-container');
   if (!widgetContainer || !currentActiveBooking) return;
 
+  const t = (k, f) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, f) : f);
   const myQueue = Number(currentActiveBooking.queue_number);
   const positionDiff = myQueue - nowServing;
   const isBeingServed = nowServing >= myQueue;
@@ -140,6 +218,9 @@ function renderActiveQueueWidget(nowServing) {
     progressPct = Math.min(100, Math.max(5, Math.round((nowServing / myQueue) * 100)));
   }
 
+  const nowText = t('queue_now', 'Now!');
+  const minsText = t('queue_mins', 'mins');
+
   widgetContainer.innerHTML = `
     <div class="queue-widget-active">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
@@ -148,7 +229,7 @@ function renderActiveQueueWidget(nowServing) {
             📍 ${currentActiveBooking.centre_name}
           </span>
           <h2 style="font-size: 1.5rem; font-weight: 800;">
-            ${isBeingServed ? '🎉 IT IS YOUR TURN!' : 'Live Procurement Queue Tracker'}
+            ${isBeingServed ? ('🎉 ' + t('queue_your_turn', 'IT IS YOUR TURN!')) : t('queue_tracker_title', 'Live Procurement Queue Tracker')}
           </h2>
         </div>
         <div style="background: rgba(0,0,0,0.25); padding: 0.35rem 0.8rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600;">
@@ -158,23 +239,23 @@ function renderActiveQueueWidget(nowServing) {
 
       <div class="queue-hero-grid">
         <div class="queue-stat-box">
-          <div class="queue-stat-label">Your Token</div>
+          <div class="queue-stat-label">${t('queue_your_token', 'Your Token')}</div>
           <div class="queue-stat-val" style="color: #FFD54F;">#${myQueue}</div>
         </div>
         <div class="queue-stat-box">
-          <div class="queue-stat-label">Now Serving</div>
+          <div class="queue-stat-label">${t('queue_now_serving', 'Now Serving')}</div>
           <div class="queue-stat-val" id="now-serving-val">#${nowServing}</div>
         </div>
         <div class="queue-stat-box">
-          <div class="queue-stat-label">Position in Line</div>
+          <div class="queue-stat-label">${t('queue_pos_in_line', 'Position in Line')}</div>
           <div class="queue-stat-val" id="position-in-line-val">
-            ${isBeingServed ? 'Now!' : `${positionDiff}`}
+            ${isBeingServed ? nowText : `${positionDiff}`}
           </div>
         </div>
         <div class="queue-stat-box">
-          <div class="queue-stat-label">Estimated Wait</div>
+          <div class="queue-stat-label">${t('queue_est_wait', 'Estimated Wait')}</div>
           <div class="queue-stat-val" id="est-wait-val" style="font-size: 1.5rem;">
-            ${isBeingServed ? '0 mins' : `~${estWaitMins}m`}
+            ${isBeingServed ? ('0 ' + minsText) : `~${estWaitMins}m`}
           </div>
         </div>
       </div>
@@ -186,14 +267,14 @@ function renderActiveQueueWidget(nowServing) {
       <div class="queue-status-text">
         <span id="queue-status-instruction">
           ${isBeingServed 
-            ? '👉 <strong>Please proceed to the procurement desk immediately with your crop harvest!</strong>'
+            ? ('👉 <strong>' + t('queue_proceed_counter', 'Please proceed to the procurement desk immediately with your crop harvest!') + '</strong>')
             : (positionDiff <= 2 
-                ? '⚡ <strong>You are next! Please arrive near the counter right now.</strong>' 
-                : `Crop: <strong>${currentActiveBooking.crop_name}</strong> (${currentActiveBooking.estimated_quantity_kg} kg est)`
+                ? ('⚡ <strong>' + t('queue_you_are_next', 'You are next! Please arrive near the counter right now.') + '</strong>') 
+                : `${t('queue_crop_label', 'Crop')}: <strong data-crop-raw="${currentActiveBooking.crop_name}">${(window.AgriLang && typeof window.AgriLang.tCrop === 'function') ? window.AgriLang.tCrop(currentActiveBooking.crop_name) : currentActiveBooking.crop_name}</strong> (${currentActiveBooking.estimated_quantity_kg} kg est)`
               )
           }
         </span>
-        <span style="font-size: 0.8rem; opacity: 0.85;">Auto-updates in real-time</span>
+        <span style="font-size: 0.8rem; opacity: 0.85;">${t('auto_updates_realtime', 'Auto-updates in real-time')}</span>
       </div>
     </div>
   `;
@@ -311,6 +392,13 @@ function setupNotificationDrawer() {
     });
   }
 }
+
+// Re-render active queue tracker when language changes
+window.addEventListener('languageChanged', () => {
+  if (document.getElementById('queue-widget-container')) {
+    checkActiveTodayQueue();
+  }
+});
 
 window.AgriQueue = {
   initFarmerQueueAndNotifications,

@@ -9,18 +9,38 @@ require('dotenv').config();
 let pool = null;
 let sqliteDb = null;
 let currentDialect = process.env.DB_TYPE || 'sqlite';
+let initPromise = null;
 
 /**
  * Initialize database and execute schema if needed.
+ * Returns cached promise so serverless invocations don't re-initialize redundantly.
  */
-async function init() {
+function init() {
+  if (!initPromise) {
+    initPromise = _doInit();
+  }
+  return initPromise;
+}
+
+async function _doInit() {
   const schemaPath = path.join(__dirname, '..', 'database', 'schema.sql');
   const schemaSql = fs.readFileSync(schemaPath, 'utf8');
 
   if (currentDialect === 'mysql') {
     try {
       const mysql = require('mysql2/promise');
-      pool = mysql.createPool({
+
+      const isCloudHost = Boolean(
+        process.env.DB_SSL === 'true' ||
+        (process.env.DB_HOST && (
+          process.env.DB_HOST.includes('tidbcloud') ||
+          process.env.DB_HOST.includes('aivencloud') ||
+          process.env.DB_HOST.includes('planetscale') ||
+          process.env.DB_HOST.includes('amazonaws.com')
+        ))
+      );
+
+      const poolOptions = {
         host: process.env.DB_HOST || 'localhost',
         port: parseInt(process.env.DB_PORT || '3306', 10),
         user: process.env.DB_USER || 'root',
@@ -30,7 +50,16 @@ async function init() {
         connectionLimit: 10,
         queueLimit: 0,
         multipleStatements: true
-      });
+      };
+
+      if (isCloudHost && process.env.DB_SSL !== 'false') {
+        poolOptions.ssl = {
+          minVersion: 'TLSv1.2',
+          rejectUnauthorized: true
+        };
+      }
+
+      pool = mysql.createPool(poolOptions);
 
       // Test connection
       const connection = await pool.getConnection();
@@ -39,7 +68,96 @@ async function init() {
 
       // Execute schema statements
       await pool.query(schemaSql);
-      console.log('✅ MySQL schema & seeds verified.');
+      console.log('✅ MySQL schema & base seeds verified.');
+
+      // Migrations: ensure password_hint column exists
+      try {
+        const [uCols] = await pool.query("SHOW COLUMNS FROM users LIKE 'password_hint'");
+        if (!uCols || uCols.length === 0) {
+          await pool.query('ALTER TABLE users ADD COLUMN password_hint VARCHAR(255) NULL AFTER password_hash');
+        }
+      } catch (e) {}
+
+      try {
+        const [sCols] = await pool.query("SHOW COLUMNS FROM centre_staff LIKE 'password_hint'");
+        if (!sCols || sCols.length === 0) {
+          await pool.query('ALTER TABLE centre_staff ADD COLUMN password_hint VARCHAR(255) NULL AFTER password_hash');
+        }
+      } catch (e) {}
+
+      try {
+        await pool.query('DROP TABLE IF EXISTS webauthn_credentials;');
+      } catch (e) {}
+
+      // Seed / Sync Pan-India Procurement Centres from centres_data.json
+      const centresDataPath = path.join(__dirname, '..', 'database', 'centres_data.json');
+      if (fs.existsSync(centresDataPath)) {
+        try {
+          const centresList = JSON.parse(fs.readFileSync(centresDataPath, 'utf8'));
+          const [countCentres] = await pool.query('SELECT COUNT(*) as count FROM procurement_centres');
+          if (countCentres[0].count < centresList.length) {
+            for (const c of centresList) {
+              await pool.query(
+                `INSERT INTO procurement_centres 
+                 (centre_id, state, city, centre_name, location, daily_capacity, opening_time, closing_time) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE 
+                   centre_name=VALUES(centre_name), 
+                   state=VALUES(state), 
+                   city=VALUES(city),
+                   location=VALUES(location),
+                   daily_capacity=VALUES(daily_capacity)`,
+                [
+                  c.centre_id,
+                  c.state || '',
+                  c.city || '',
+                  c.centre_name,
+                  c.location || '',
+                  c.daily_capacity || 60,
+                  c.opening_time || '08:00:00',
+                  c.closing_time || '17:00:00'
+                ]
+              );
+            }
+            console.log(`✅ Seeded ${centresList.length} procurement centres in MySQL.`);
+          }
+        } catch (loadErr) {
+          console.error('Error loading centres_data.json in MySQL:', loadErr);
+        }
+      }
+
+      // Seed / Sync All Crop Rates from crops_data.json
+      const cropsDataPath = path.join(__dirname, '..', 'database', 'crops_data.json');
+      if (fs.existsSync(cropsDataPath)) {
+        try {
+          const cropsList = JSON.parse(fs.readFileSync(cropsDataPath, 'utf8'));
+          for (const c of cropsList) {
+            await pool.query(
+              `INSERT INTO crop_rates (rate_id, crop_name, price_per_quintal, previous_price)
+               VALUES (?, ?, ?, ?)
+               ON DUPLICATE KEY UPDATE
+                 crop_name=VALUES(crop_name),
+                 price_per_quintal=VALUES(price_per_quintal)`,
+              [c.rate_id, c.crop_name, c.price_per_quintal, c.previous_price]
+            );
+          }
+          console.log(`✅ Seeded / Verified ${cropsList.length} crops in MySQL crop_rates.`);
+        } catch (loadErr) {
+          console.error('Error loading crops_data.json in MySQL:', loadErr);
+        }
+      }
+
+      // Seed centre_staff if empty
+      const [countStaff] = await pool.query('SELECT COUNT(*) as count FROM centre_staff');
+      if (countStaff[0].count === 0) {
+        await pool.query(
+          `INSERT INTO centre_staff (id, centre_id, name, phone, password_hash, role) VALUES 
+           (1, 1, 'Rajesh Sharma', '9999999999', '$2a$10$XxhGih/x7H.LOMIZ4IA4QOKWtn49HwhgbpNJuUw0LIu7g.k9gXgey', 'mandi_admin'),
+           (2, 1, 'Suresh Verma', '9999988888', '$2a$10$YFSIIdJ4AxW3Hu5qd90GEu9PZOdh8zW3QlmHlbGlM0Jwd7dKassPC', 'mandi_member')
+           ON DUPLICATE KEY UPDATE name=VALUES(name)`
+        );
+      }
+
       return;
     } catch (err) {
       console.warn(`⚠️ MySQL connection failed (${err.message}). Falling back to built-in SQLite engine...`);
@@ -49,7 +167,7 @@ async function init() {
 
   // SQLite Initialization (using native Node.js sqlite)
   const { DatabaseSync } = require('node:sqlite');
-  const dbFile = path.join(__dirname, '..', 'agriconnect.db');
+  const dbFile = process.env.SQLITE_DB_PATH || path.join(__dirname, '..', 'agriconnect.db');
   sqliteDb = new DatabaseSync(dbFile);
   console.log(`✅ Using native SQLite database at: ${dbFile}`);
 
@@ -60,6 +178,7 @@ async function init() {
       full_name TEXT NOT NULL,
       phone_number TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
+      password_hint TEXT,
       role TEXT DEFAULT 'farmer',
       village TEXT,
       id_proof_number TEXT,
@@ -99,6 +218,7 @@ async function init() {
       name TEXT NOT NULL,
       phone TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
+      password_hint TEXT,
       role TEXT DEFAULT 'mandi_member',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (centre_id) REFERENCES procurement_centres(centre_id)
@@ -195,8 +315,23 @@ async function init() {
     );
   `);
 
-  // SQLite Migrations: Ensure state and city columns exist in procurement_centres
+  // SQLite Migrations & Cleanup
   try {
+    // Drop deprecated WebAuthn/Passkey table if present
+    sqliteDb.exec('DROP TABLE IF EXISTS webauthn_credentials;');
+
+    // Ensure password_hint column exists in users
+    const userCols = sqliteDb.prepare('PRAGMA table_info(users)').all();
+    if (!userCols.some(c => c.name === 'password_hint')) {
+      sqliteDb.exec('ALTER TABLE users ADD COLUMN password_hint TEXT;');
+    }
+
+    // Ensure password_hint column exists in centre_staff
+    const staffCols = sqliteDb.prepare('PRAGMA table_info(centre_staff)').all();
+    if (!staffCols.some(c => c.name === 'password_hint')) {
+      sqliteDb.exec('ALTER TABLE centre_staff ADD COLUMN password_hint TEXT;');
+    }
+
     const tableCols = sqliteDb.prepare('PRAGMA table_info(procurement_centres)').all();
     const hasState = tableCols.some(c => c.name === 'state');
     if (!hasState) {
@@ -204,7 +339,6 @@ async function init() {
       sqliteDb.exec('ALTER TABLE procurement_centres ADD COLUMN city TEXT;');
     }
 
-    const userCols = sqliteDb.prepare('PRAGMA table_info(users)').all();
     const hasCentreId = userCols.some(c => c.name === 'centre_id');
     if (!hasCentreId) {
       sqliteDb.exec('ALTER TABLE users ADD COLUMN centre_id INTEGER;');
@@ -219,6 +353,9 @@ async function init() {
     if (!bColNames.includes('walkin_name')) sqliteDb.exec('ALTER TABLE bookings ADD COLUMN walkin_name TEXT;');
     if (!bColNames.includes('walkin_phone')) sqliteDb.exec('ALTER TABLE bookings ADD COLUMN walkin_phone TEXT;');
     if (!bColNames.includes('slot_id')) sqliteDb.exec('ALTER TABLE bookings ADD COLUMN slot_id INTEGER;');
+
+    // Ensure at most one mandi_admin can be assigned per centre
+    sqliteDb.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_centre_staff_admin ON centre_staff (centre_id) WHERE role = 'mandi_admin';");
 
     // Ensure farmer_id is nullable in SQLite for offline walk-ins
     const farmerIdCol = bookingCols.find(c => c.name === 'farmer_id');

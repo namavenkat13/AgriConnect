@@ -37,24 +37,56 @@ function getCurrentTimeString() {
 router.post('/register', async (req, res) => {
   try {
     const {
+      centre_id,
       name,
-      location,
-      district,
-      state,
-      daily_capacity,
-      crops_procured,
       admin_name,
       admin_phone,
-      admin_password
+      admin_password,
+      password_hint
     } = req.body;
 
-    if (!name || !admin_name || !admin_phone || !admin_password) {
+    if (!centre_id && !name) {
       return res.status(400).json({
         success: false,
-        message: 'Mandi name, admin name, official phone, and password are required.'
+        message: 'Please select an authorized APMC Mandi / Centre from the official directory.'
       });
     }
 
+    if (!admin_name || !admin_phone || !admin_password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Admin full name, official mobile number, and password are required.'
+      });
+    }
+
+    // 1. Verify that the selected centre exists in the 114 procurement centres
+    let centre = null;
+    if (centre_id) {
+      centre = await db.get('SELECT * FROM procurement_centres WHERE centre_id = ?', [Number(centre_id)]);
+    } else if (name) {
+      centre = await db.get('SELECT * FROM procurement_centres WHERE LOWER(TRIM(centre_name)) = LOWER(TRIM(?))', [name.trim()]);
+    }
+
+    if (!centre) {
+      return res.status(400).json({
+        success: false,
+        message: 'Selected Mandi Centre does not exist. Please select an authorized APMC mandi from the list.'
+      });
+    }
+
+    // 2. Reject duplicate registration: check if this centre is already registered/claimed by a Mandi Admin
+    const existingAdmin = await db.get(
+      'SELECT id, name FROM centre_staff WHERE centre_id = ? AND role = ?',
+      [centre.centre_id, 'mandi_admin']
+    );
+    if (existingAdmin) {
+      return res.status(409).json({
+        success: false,
+        message: `This Mandi Centre (${centre.centre_name}) is already registered by a Mandi Admin. Duplicate registration is not permitted.`
+      });
+    }
+
+    // 3. Validate phone format and uniqueness
     const phoneCheck = validatePhoneNumber(admin_phone, false);
     if (!phoneCheck.valid) {
       return res.status(400).json({
@@ -64,7 +96,6 @@ router.post('/register', async (req, res) => {
     }
     const cleanPhone = phoneCheck.cleanPhone;
 
-    // Check uniqueness
     const existingStaff = await db.get('SELECT id FROM centre_staff WHERE phone = ?', [cleanPhone]);
     const existingUser = await db.get('SELECT user_id FROM users WHERE phone_number = ?', [cleanPhone]);
     if (existingStaff || existingUser) {
@@ -74,32 +105,33 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    const cap = Number(daily_capacity) || 60;
-
-    // Insert new Procurement Centre
-    const centreRes = await db.query(
-      `INSERT INTO procurement_centres 
-       (centre_name, location, city, state, daily_capacity, opening_time, closing_time) 
-       VALUES (?, ?, ?, ?, ?, '08:00:00', '17:00:00')`,
-      [name.trim(), (location || '').trim(), (district || '').trim(), (state || '').trim(), cap]
-    );
-    const centreId = centreRes.insertId;
+    // Process optional password hint
+    let cleanHint = null;
+    if (password_hint && typeof password_hint === 'string' && password_hint.trim()) {
+      cleanHint = password_hint.trim();
+      if (cleanHint.toLowerCase() === String(admin_password).trim().toLowerCase()) {
+        return res.status(400).json({ success: false, message: 'Password hint cannot be identical to your password.' });
+      }
+      if (cleanHint.length > 150) {
+        cleanHint = cleanHint.substring(0, 150);
+      }
+    }
 
     const passwordHash = await bcrypt.hash(admin_password, 10);
 
-    // Insert first mandi_admin in centre_staff
+    // 4. Associate admin with the existing centre in centre_staff (do NOT create a duplicate centre)
     const staffRes = await db.query(
-      `INSERT INTO centre_staff (centre_id, name, phone, password_hash, role) 
-       VALUES (?, ?, ?, ?, 'mandi_admin')`,
-      [centreId, admin_name.trim(), cleanPhone, passwordHash]
+      `INSERT INTO centre_staff (centre_id, name, phone, password_hash, role, password_hint) 
+       VALUES (?, ?, ?, ?, 'mandi_admin', ?)`,
+      [centre.centre_id, admin_name.trim(), cleanPhone, passwordHash, cleanHint]
     );
     const staffId = staffRes.insertId;
 
-    // Mirror in users for unified login
+    // 5. Mirror in users table for unified login
     await db.query(
-      `INSERT INTO users (full_name, phone_number, password_hash, role, village, id_proof_number, centre_id, created_at) 
-       VALUES (?, ?, ?, 'mandi_admin', ?, 'MANDI-ADMIN', ?, CURRENT_TIMESTAMP)`,
-      [admin_name.trim(), cleanPhone, passwordHash, `${district || ''}, ${state || ''}`, centreId]
+      `INSERT INTO users (full_name, phone_number, password_hash, role, village, id_proof_number, centre_id, password_hint, created_at) 
+       VALUES (?, ?, ?, 'mandi_admin', ?, 'MANDI-ADMIN', ?, ?, CURRENT_TIMESTAMP)`,
+      [admin_name.trim(), cleanPhone, passwordHash, `${centre.city || ''}, ${centre.state || ''}`, centre.centre_id, cleanHint]
     );
 
     const jwtSecret = process.env.JWT_SECRET;
@@ -115,8 +147,8 @@ router.post('/register', async (req, res) => {
         phone_number: cleanPhone,
         role: 'mandi_admin',
         full_name: admin_name.trim(),
-        centre_id: centreId,
-        centre_name: name.trim(),
+        centre_id: centre.centre_id,
+        centre_name: centre.centre_name,
         is_mandi: true
       },
       jwtSecret,
@@ -125,7 +157,7 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Mandi centre and Admin account registered successfully!',
+      message: 'Mandi Admin account registered successfully! Welcome to AgriConnect Mandi Desk.',
       token,
       user: {
         user_id: staffId,
@@ -133,16 +165,16 @@ router.post('/register', async (req, res) => {
         full_name: admin_name.trim(),
         phone_number: cleanPhone,
         role: 'mandi_admin',
-        centre_id: centreId,
-        centre_name: name.trim(),
+        centre_id: centre.centre_id,
+        centre_name: centre.centre_name,
         is_mandi: true
       },
       centre: {
-        centre_id: centreId,
-        centre_name: name.trim(),
-        daily_capacity: cap,
-        state,
-        city: district
+        centre_id: centre.centre_id,
+        centre_name: centre.centre_name,
+        daily_capacity: centre.daily_capacity,
+        state: centre.state,
+        city: centre.city
       }
     });
   } catch (err) {

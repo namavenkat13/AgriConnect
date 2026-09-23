@@ -1,9 +1,5 @@
 # Dependency directories
 node_modules/
-node_modules*/
-
-# Temporary and scratch testing directories
-scratch/
 
 # Environment variables & secrets (CRITICAL: Do NOT commit real secrets)
 .env
@@ -36,6 +32,3 @@ agriconnect.db
 *.db
 *.sqlite
 *.sqlite3
-
-# Vercel CLI directory
-.vercel/

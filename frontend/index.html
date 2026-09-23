@@ -6,6 +6,7 @@
   <title>AgriConnect - Farmer Procurement Management Platform & Live Mandi Rates</title>
   <link rel="stylesheet" href="css/style.css?v=2.3">
   <script src="js/theme.js"></script>
+  <script src="js/i18n.js?v=3.2"></script>
   <script src="js/ist-clock.js"></script>
 </head>
 <body>
@@ -17,8 +18,8 @@
         <div style="display: flex; align-items: center; gap: 0.75rem;">
           <div class="logo-icon">🌾</div>
           <div>
-            <span class="brand-title">AgriConnect</span>
-            <div class="brand-tagline">No more waiting in line for your harvest.</div>
+            <span class="brand-title" data-i18n="brand_title">AgriConnect</span>
+            <div class="brand-tagline" data-i18n="brand_tagline">No more waiting in line for your harvest.</div>
           </div>
         </div>
         <div class="header-live-clock" title="Live India Standard Time (Asia/Kolkata)">
@@ -28,21 +29,30 @@
         </div>
       </div>
       <div class="header-nav">
-        <button class="theme-toggle-btn" onclick="AgriTheme.toggleTheme()" aria-label="Toggle theme">
-          <span class="btn-icon">🌙</span> <span>Dark Mode</span>
+        <!-- Compact 3-Position Sliding Language Switch -->
+        <div class="lang-switch-wrapper" data-active-lang="en" role="group" aria-label="Language selection">
+          <div class="lang-switch-slider"></div>
+          <button type="button" class="lang-btn" data-lang="en" onclick="AgriLang.setLanguage('en')" aria-label="English">E</button>
+          <button type="button" class="lang-btn" data-lang="te" onclick="AgriLang.setLanguage('te')" aria-label="Telugu">త</button>
+          <button type="button" class="lang-btn" data-lang="hi" onclick="AgriLang.setLanguage('hi')" aria-label="Hindi">ह</button>
+        </div>
+
+        <button class="theme-toggle-btn" onclick="AgriTheme.toggleTheme()" aria-label="Toggle theme" title="Toggle dark/light mode">
+          <span class="btn-icon">🌙</span> <span data-i18n="theme_dark">Dark Mode</span>
         </button>
-        <a href="#mandi-directory" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.9rem;">
-          <span class="btn-icon">🏛️</span> <span>All Mandis</span>
-        </a>
-        <a href="#mandi-rates" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.9rem;">
-          <span class="btn-icon">📊</span> <span>Live Rates</span>
-        </a>
+        <button type="button" class="btn btn-secondary" id="nav-btn-login" onclick="openAuthModal('login')">
+          <span class="btn-icon">🔐</span> <span data-i18n="nav_login">Login</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="nav-btn-signup" onclick="openAuthModal('signup')">
+          <span class="btn-icon">✍️</span> <span data-i18n="nav_signup">Sign Up</span>
+        </button>
       </div>
     </div>
   </header>
 
   <!-- Stock-Market Scrolling Mandi Ticker Strip -->
-  <div class="ticker-strip-wrapper">
+  <div class="ticker-strip-wrapper" data-ticker-label="🔴 LIVE MANDI">
+    <span class="ticker-badge" id="ticker-badge" data-i18n="ticker_live_mandi">🔴 LIVE MANDI</span>
     <div class="ticker-track" id="ticker-track">
       <!-- Injected dynamically by ticker.js -->
     </div>
@@ -54,8 +64,8 @@
     <!-- Hero Section with Tabbed Auth Card -->
     <section class="landing-hero">
       <div class="hero-text">
-        <h1>Direct Mandi Access. <span>Zero Waiting.</span> Guaranteed Payouts.</h1>
-        <p>
+        <h1 data-i18n="hero_title">Direct Mandi Access. <span>Zero Waiting.</span> Guaranteed Payouts.</h1>
+        <p data-i18n="hero_desc">
           Book procurement slots from your mobile phone, track your real-time queue position with live wait times, and receive automatic SMS updates at every step from weighing to direct bank transfer.
         </p>
         
@@ -63,257 +73,61 @@
           <div class="feature-pill">
             <span class="feature-icon">⏱️</span>
             <div>
-              <strong>Live Queue Tracker</strong>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Know exact wait times before arrival</div>
+              <strong data-i18n="hero_feat_1_title">Live Queue Tracker</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;" data-i18n="hero_feat_1_desc">Know exact wait times before arrival</div>
             </div>
           </div>
           <div class="feature-pill">
             <span class="feature-icon">⚖️</span>
             <div>
-              <strong>Transparent Grading</strong>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Live status from weighbridge to acceptance</div>
+              <strong data-i18n="hero_feat_2_title">Transparent Grading</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;" data-i18n="hero_feat_2_desc">Live status from weighbridge to acceptance</div>
             </div>
           </div>
           <div class="feature-pill">
             <span class="feature-icon">📈</span>
             <div>
-              <strong>Daily Mandi Ticker</strong>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Real-time APMC benchmark prices</div>
+              <strong data-i18n="hero_feat_3_title">Daily Mandi Ticker</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;" data-i18n="hero_feat_3_desc">Real-time APMC benchmark prices</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Auth Card: Login / Register Tabs -->
-      <div class="auth-card">
-        <div class="tab-nav">
-          <button class="tab-btn active" id="tab-btn-login" onclick="switchAuthTab('login')">
-            <span class="tab-icon">👨‍🌾</span> <span>Farmer Login</span>
+      <!-- Hero Welcome Card with Login / Sign Up -->
+      <div class="hero-auth-card">
+        <div class="hero-auth-header">
+          <div class="hero-auth-icon">🌾</div>
+          <h2 class="hero-auth-title" data-i18n="hero_welcome_title">Welcome to AgriConnect</h2>
+          <p class="hero-auth-desc" data-i18n="hero_welcome_desc">India's Smart Agricultural Procurement &amp; Live Queue Infrastructure</p>
+        </div>
+
+        <div class="hero-auth-actions">
+          <button type="button" class="btn btn-primary btn-block btn-lg" onclick="openAuthModal('login')">
+            <span class="btn-icon">🔐</span> <span data-i18n="nav_login">Login</span>
           </button>
-          <button class="tab-btn" id="tab-btn-register" onclick="switchAuthTab('register')">
-            <span class="tab-icon">🌾</span> <span>Farmer Register</span>
-          </button>
-          <button class="tab-btn staff-tab" id="tab-btn-mandi-login" onclick="switchAuthTab('mandi-login')">
-            <span class="tab-icon">🏢</span> <span>Mandi Login</span>
-          </button>
-          <button class="tab-btn staff-tab" id="tab-btn-mandi-register" onclick="switchAuthTab('mandi-register')">
-            <span class="tab-icon">📝</span> <span>Mandi Register</span>
+          <button type="button" class="btn btn-secondary btn-block btn-lg" onclick="openAuthModal('signup')">
+            <span class="btn-icon">✍️</span> <span data-i18n="nav_signup">Sign Up</span>
           </button>
         </div>
 
-        <!-- Tab 1: Farmer Login Form -->
-        <div class="tab-content active" id="tab-content-login">
-          <form id="login-form">
-            <div class="form-group">
-              <label class="form-label" for="login-phone">Farmer Registered Phone</label>
-              <input type="tel" id="login-phone" class="form-input" placeholder="e.g. 9876543210" required autocomplete="username">
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label" for="login-password">Password</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
-                <button type="button" class="password-toggle-btn" data-target="login-password" aria-label="Show password" title="Show password">
-                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block" id="login-submit-btn">
-              Farmer Secure Login →
-            </button>
-          </form>
-
-          <div style="margin-top: 1.25rem; padding: 0.75rem; background: var(--bg-card-alt); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
-            <span class="demo-icon">👨‍🌾</span> <div><strong>Demo Farmer Account:</strong> Phone: <code>9876543210</code> | Password: <code>farmer123</code></div>
+        <div class="hero-auth-meta">
+          <div class="hero-auth-meta-item">
+            <span>🏛️</span>
+            <strong data-i18n="meta_pan_india">Pan-India</strong>
+            <span data-i18n="meta_31_states">31 States &amp; UTs</span>
+          </div>
+          <div class="hero-auth-meta-item">
+            <span>⏱️</span>
+            <strong data-i18n="meta_zero_waiting">Zero Waiting</strong>
+            <span data-i18n="meta_queue_tracker">Live Queue Tracker</span>
+          </div>
+          <div class="hero-auth-meta-item">
+            <span>💰</span>
+            <strong data-i18n="meta_guaranteed">Guaranteed</strong>
+            <span data-i18n="meta_direct_payout">Direct Bank Payout</span>
           </div>
         </div>
-
-        <!-- Tab 2: Farmer Register Form -->
-        <div class="tab-content" id="tab-content-register">
-          <form id="register-form">
-            <div class="form-group">
-              <label class="form-label" for="reg-fullname">Full Name</label>
-              <input type="text" id="reg-fullname" class="form-input" placeholder="e.g. Ramesh Kumar Patil" required>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="reg-phone">Phone Number (10 Digits) *</label>
-              <input type="tel" id="reg-phone" class="form-input" placeholder="e.g. 9822001122" required maxlength="10">
-              <div class="form-help">Must be a valid 10-digit mobile number starting with 6, 7, 8, or 9.</div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="reg-password">Create Password</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="reg-password" class="form-input" placeholder="At least 6 characters" required minlength="6">
-                <button type="button" class="password-toggle-btn" data-target="reg-password" aria-label="Show password" title="Show password">
-                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="reg-village">Village / Address</label>
-              <input type="text" id="reg-village" class="form-input" placeholder="e.g. Dindori, Nashik">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="reg-idproof">Aadhaar Card Number (12 Digits) *</label>
-              <input type="text" id="reg-idproof" class="form-input" placeholder="e.g. 5421 8921 4412" required maxlength="14">
-              <div class="form-help">Must consist of exactly 12 numeric digits.</div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Crops Grown (Select all that apply)</label>
-              <div class="crop-chip-grid" id="crop-chip-grid" style="max-height: 180px; overflow-y: auto;">
-                <label class="crop-chip-label"><input type="checkbox" value="Wheat (Sharbati)"> <span class="crop-icon">🌾</span> Wheat</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Paddy (Basmati)"> <span class="crop-icon">🍚</span> Paddy (Rice)</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Tomato (Hybrid)"> <span class="crop-icon">🍅</span> Tomato</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Onion (Red Nashik)"> <span class="crop-icon">🧅</span> Onion</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Potato (Jyoti)"> <span class="crop-icon">🥔</span> Potato</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Cotton (Medium Staple)"> <span class="crop-icon">☁️</span> Cotton</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Soybean (Yellow)"> <span class="crop-icon">🌱</span> Soybean</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Maize (Kharif)"> <span class="crop-icon">🌽</span> Maize</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Mustard (Black)"> <span class="crop-icon">🌼</span> Mustard</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Green Gram (Moong)"> <span class="crop-icon">🌿</span> Green Gram</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Sugarcane"> <span class="crop-icon">🎋</span> Sugarcane</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Red Chilli (Guntur)"> <span class="crop-icon">🌶️</span> Red Chilli</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Gram (Chana / Chickpea)"> <span class="crop-icon">🧆</span> Gram (Chana)</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Tur Dal (Arhar / Pigeon Pea)"> <span class="crop-icon">🥣</span> Tur Dal (Arhar)</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Groundnut (Peanut)"> <span class="crop-icon">🥜</span> Groundnut</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Turmeric (Haldi)"> <span class="crop-icon">🟡</span> Turmeric</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Cumin Seeds (Jeera)"> <span class="crop-icon">🧂</span> Cumin (Jeera)</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Banana (Robusta)"> <span class="crop-icon">🍌</span> Banana</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Apple (Royal Delicious)"> <span class="crop-icon">🍎</span> Apple</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Mango (Alphonso / Kesar)"> <span class="crop-icon">🥭</span> Mango</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Jute (Raw Jute)"> <span class="crop-icon">🧶</span> Jute</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Tea (Assam Green Leaf)"> <span class="crop-icon">🍵</span> Tea</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Arecanut (Supari)"> <span class="crop-icon">🌰</span> Arecanut</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Coffee (Arabica / Robusta)"> <span class="crop-icon">☕</span> Coffee</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Garlic (Lahsun)"> <span class="crop-icon">🧄</span> Garlic</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Ginger (Adrak)"> <span class="crop-icon">🫚</span> Ginger</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Barley (Jau)"> <span class="crop-icon">🌾</span> Barley (Jau)</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Jowar (Sorghum)"> <span class="crop-icon">🌾</span> Jowar</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Bajra (Pearl Millet)"> <span class="crop-icon">🌾</span> Bajra</label>
-                <label class="crop-chip-label"><input type="checkbox" value="Litchi (Shahi)"> <span class="crop-icon">🍒</span> Litchi</label>
-              </div>
-
-              <div class="custom-crop-wrapper">
-                <input type="text" id="custom-crop-input" class="form-input" placeholder="Add custom crop not listed above">
-                <button type="button" class="btn btn-secondary" onclick="addCustomCropChip()">+ Add</button>
-              </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block" id="register-submit-btn">
-              Complete Farmer Registration →
-            </button>
-          </form>
-        </div>
-
-        <!-- Tab 3: Mandi Staff Login Form -->
-        <div class="tab-content" id="tab-content-mandi-login">
-          <form id="mandi-login-form">
-            <div class="form-group">
-              <label class="form-label" for="mandi-login-phone">Mandi Staff Official Mobile</label>
-              <input type="tel" id="mandi-login-phone" class="form-input" placeholder="e.g. 9999999999" required autocomplete="username">
-              <div class="form-help">Authorized APMC Mandi Officers, Weighbridge Staff, & Admins.</div>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label" for="mandi-login-password">Staff Password</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="mandi-login-password" class="form-input" placeholder="Enter password" required autocomplete="current-password">
-                <button type="button" class="password-toggle-btn" data-target="mandi-login-password" aria-label="Show password" title="Show password">
-                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block" id="mandi-login-btn">
-              Mandi Staff Login →
-            </button>
-          </form>
-
-          <div style="margin-top: 1.25rem; padding: 0.75rem; background: var(--badge-booked-bg); border: 1px solid var(--badge-booked-border); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--badge-booked-text); display: flex; align-items: center; gap: 0.5rem;">
-            <span class="demo-icon">🏢</span> <div><strong>Pre-seeded Staff Account:</strong> Phone: <code>9999999999</code> | Password: <code>admin123</code></div>
-          </div>
-        </div>
-
-        <!-- Tab 4: Register Mandi Centre & Admin Form -->
-        <div class="tab-content" id="tab-content-mandi-register">
-          <form id="mandi-register-form">
-            <div style="background: var(--alert-success-bg); border-left: 3px solid var(--success); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--alert-success-text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-              <span class="demo-icon">🏛️</span> <div>Register a new APMC Mandi Centre along with its primary <strong>Mandi Admin</strong> account.</div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="mandi-reg-name">Mandi / Centre Name *</label>
-              <input type="text" id="mandi-reg-name" class="form-input" placeholder="e.g. Nashik Main APMC Yard" required>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-              <div class="form-group">
-                <label class="form-label" for="mandi-reg-district">District / City *</label>
-                <input type="text" id="mandi-reg-district" class="form-input" placeholder="e.g. Nashik" required>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="mandi-reg-state-input">State *</label>
-                <input type="text" id="mandi-reg-state-input" class="form-input" placeholder="e.g. Maharashtra" required>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="mandi-reg-location">Location / Address</label>
-              <input type="text" id="mandi-reg-location" class="form-input" placeholder="e.g. Market Yard, Panchavati">
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-              <div class="form-group">
-                <label class="form-label" for="mandi-reg-capacity">Daily Capacity (Farmers/day)</label>
-                <input type="number" id="mandi-reg-capacity" class="form-input" placeholder="100" value="100" min="10">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="mandi-reg-crops">Crops Procured</label>
-                <input type="text" id="mandi-reg-crops" class="form-input" placeholder="e.g. Wheat, Tomato, Onion">
-              </div>
-            </div>
-
-            <hr style="border: 0; border-top: 1px dashed var(--border-color); margin: 1rem 0;">
-            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
-              <span class="demo-icon">👑</span> <span>Primary Mandi Admin Details</span>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="mandi-reg-fullname">Admin Full Name *</label>
-              <input type="text" id="mandi-reg-fullname" class="form-input" placeholder="e.g. Rajesh Sharma" required>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="mandi-reg-phone">Official Mobile Number (10 Digits) *</label>
-              <input type="tel" id="mandi-reg-phone" class="form-input" placeholder="e.g. 9822001122" required maxlength="10">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="mandi-reg-password">Create Admin Password *</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="mandi-reg-password" class="form-input" placeholder="At least 6 characters" required minlength="6">
-                <button type="button" class="password-toggle-btn" data-target="mandi-reg-password" aria-label="Show password" title="Show password">
-                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block" id="mandi-register-btn">
-              Register Mandi & Admin Account →
-            </button>
-          </form>
-        </div>
-
       </div>
     </section>
 
@@ -322,14 +136,14 @@
       <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
         <div>
           <h2 class="section-title">
-            <span class="pulse-indicator"></span> Today's Mandi Benchmark Rates
+            <span class="pulse-indicator"></span> <span data-i18n="rates_title">Today's Mandi Benchmark Rates</span>
           </h2>
-          <div class="section-subtitle" style="margin-bottom: 0;">
+          <div class="section-subtitle" style="margin-bottom: 0;" data-i18n="rates_subtitle">
             Live wholesale agricultural rates updated directly from regional APMC procurement centres.
           </div>
         </div>
         <div style="font-size: 0.8rem; color: var(--text-muted); background: var(--bg-card); padding: 0.4rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); display: inline-flex; align-items: center; gap: 0.4rem;">
-          <span class="btn-icon">🔄</span> Auto-refreshes in real-time
+          <span class="btn-icon">🔄</span> <span data-i18n="rates_auto_refresh">Auto-refreshes in real-time</span>
         </div>
       </div>
 
@@ -340,13 +154,13 @@
             type="text" 
             id="crop-search-input" 
             class="form-input" 
-            placeholder="🔍 Search crops (e.g. Wheat, Sugarcane, Chilli, Cotton, Turmeric)..." 
+            placeholder="🔍 Search crops (e.g. Wheat, Sugarcane, Chilli, Cotton, Turmeric)..." data-i18n-placeholder="rates_search_placeholder" 
             style="width: 100%; padding: 0.65rem 0.85rem 0.65rem 2.4rem; font-size: 0.95rem; margin-bottom: 0;"
           >
           <span style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none; opacity: 0.6;">🔍</span>
         </div>
         <div id="crop-count-badge" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); background: var(--bg-card-alt, #f8fafc); padding: 0.45rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); display: inline-flex; align-items: center; gap: 0.4rem;">
-          <span style="color: var(--primary-green);">●</span> Showing all 30 Mandi Crops
+          <span style="color: var(--primary-green);">●</span> <span data-i18n="rates_showing_crops">Showing all 30 Mandi Crops</span>
         </div>
       </div>
 
@@ -364,9 +178,9 @@
       <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
         <div>
           <h2 class="section-title">
-            <span class="btn-icon" style="font-size: 1.5rem;">🏛️</span> All Procurement Mandis Across India
+            <span class="btn-icon" style="font-size: 1.5rem;">🏛️</span> <span data-i18n="mandi_dir_title">All Procurement Mandis Across India</span>
           </h2>
-          <div class="section-subtitle" style="margin-bottom: 0;">
+          <div class="section-subtitle" style="margin-bottom: 0;" data-i18n="mandi_dir_subtitle">
             Browse and search all authorized APMC procurement centres across 31 States &amp; Union Territories. Select any mandi to book your arrival slot.
           </div>
         </div>
@@ -382,14 +196,14 @@
             type="text" 
             id="mandi-search-input" 
             class="form-input" 
-            placeholder="🔍 Search mandi by name, city, district, or address..." 
+            placeholder="🔍 Search mandi by name, city, district, or address..." data-i18n-placeholder="mandi_search_placeholder" 
             style="width: 100%; padding: 0.65rem 0.85rem 0.65rem 2.4rem; font-size: 0.95rem; margin-bottom: 0;"
           >
           <span style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none; opacity: 0.6;">🔍</span>
         </div>
         <div style="flex: 0 1 280px; min-width: 200px;">
           <select id="mandi-state-filter" class="form-select" style="width: 100%; padding: 0.65rem 0.85rem; font-size: 0.9rem; margin-bottom: 0;">
-            <option value="">All States (Pan-India)</option>
+            <option value="" data-i18n="mandi_all_states">All States (Pan-India)</option>
           </select>
         </div>
       </div>
@@ -404,17 +218,442 @@
 
   </main>
 
+  <!-- Unified Role Selection & Authentication Modal -->
+  <div class="modal-backdrop modal-overlay" id="auth-modal" style="display: none;">
+    <div class="modal-box modal-content auth-modal-box">
+      <div class="auth-modal-header">
+        <div class="auth-modal-header-left">
+          <button type="button" class="auth-modal-back-btn" id="auth-modal-back-btn" onclick="backToRoleSelect()" style="display: none;" aria-label="Go back to role selection">
+            <span>← Back</span>
+          </button>
+          <h3 class="auth-modal-title" id="auth-modal-title" data-i18n="auth_modal_login_title">Login to AgriConnect</h3>
+        </div>
+        <button type="button" class="auth-modal-close-btn" onclick="closeAuthModal()" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="auth-modal-body">
+        <!-- View 1: Role Selection Screen -->
+        <div id="auth-role-select-view">
+          <div class="role-select-intro">
+            <h3 id="role-select-heading" data-i18n="role_select_heading_login">Select Your Role</h3>
+            <p id="role-select-subheading" data-i18n="role_select_subheading_login">Choose whether you are logging in as a Farmer or Mandi APMC Desk</p>
+          </div>
+
+          <div class="role-card-grid">
+            <!-- Choice 1: Farmer -->
+            <div class="role-card" onclick="selectRole('farmer')">
+              <div class="role-card-icon">👨‍🌾</div>
+              <div class="role-card-name" data-i18n="role_farmer_title">Farmer</div>
+              <div class="role-card-desc" data-i18n="role_farmer_desc">For farmers to book procurement slots, track live queues, and receive payouts.</div>
+              <button type="button" class="btn btn-primary role-card-btn" id="role-farmer-btn" data-i18n="role_farmer_btn_login">Continue as Farmer →</button>
+            </div>
+
+            <!-- Choice 2: Mandi -->
+            <div class="role-card staff-role" onclick="selectRole('mandi')">
+              <div class="role-card-icon">🏢</div>
+              <div class="role-card-name" data-i18n="role_mandi_title">Mandi</div>
+              <div class="role-card-desc" data-i18n="role_mandi_desc">For APMC Mandi Officers, Weighbridge Operators, and Centre Administrators.</div>
+              <button type="button" class="btn btn-secondary role-card-btn" id="role-mandi-btn" data-i18n="role_mandi_btn_login">Continue as Mandi →</button>
+            </div>
+          </div>
+
+          <div class="role-card-footer-switch" id="role-footer-switch">
+            Don't have an account? <a onclick="openAuthModal('signup')">Sign Up here</a>
+          </div>
+        </div>
+
+        <!-- View 2: Form 1 - Farmer Login -->
+        <div class="tab-content" id="tab-content-login" style="display: none;">
+          <form id="login-form">
+            <div class="form-group">
+              <label class="form-label" for="login-phone" data-i18n="label_farmer_phone">Farmer Registered Phone</label>
+              <input type="tel" id="login-phone" class="form-input" placeholder="e.g. 9876543210" data-i18n-placeholder="placeholder_farmer_phone" required autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="login-password" data-i18n="label_password">Password</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="login-password" class="form-input" placeholder="Enter your password" data-i18n-placeholder="placeholder_password" required autocomplete="current-password">
+                <button type="button" class="password-toggle-btn" data-target="login-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="forgot-password-link-wrapper" style="text-align: right; margin-top: -0.35rem; margin-bottom: 0.85rem;">
+              <a href="javascript:void(0)" onclick="openForgotPasswordFlow('farmer')" style="font-size: 0.82rem; color: var(--primary-green); text-decoration: none; font-weight: 500;" data-i18n="link_forgot_password">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="login-submit-btn" data-i18n="btn_farmer_login">
+              Farmer Secure Login →
+            </button>
+          </form>
+
+          <div style="margin-top: 1.25rem; padding: 0.75rem; background: var(--bg-card-alt); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+            <span class="demo-icon">👨‍🌾</span> <div><strong>Demo Farmer Account:</strong> Phone: <code>9876543210</code> | Password: <code>farmer123</code></div>
+          </div>
+
+          <div class="auth-form-subswitch">
+            Don't have a farmer account? <a onclick="switchModeAndRole('signup', 'farmer')">Register as Farmer →</a>
+          </div>
+        </div>
+
+        <!-- Tab 2: Farmer Register Form -->
+        <div class="tab-content" id="tab-content-register" style="display: none;">
+          <form id="register-form">
+            <div class="form-group">
+              <label class="form-label" for="reg-fullname" data-i18n="label_full_name">Full Name</label>
+              <input type="text" id="reg-fullname" class="form-input" placeholder="e.g. Ramesh Kumar Patil" data-i18n-placeholder="placeholder_full_name" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-phone" data-i18n="label_phone_10">Phone Number (10 Digits) *</label>
+              <input type="tel" id="reg-phone" class="form-input" placeholder="e.g. 9822001122" data-i18n-placeholder="placeholder_phone_10" required maxlength="10">
+              <div class="form-help" data-i18n="help_phone">Must be a valid 10-digit mobile number starting with 6, 7, 8, or 9.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-password" data-i18n="label_create_password">Create Password</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="reg-password" class="form-input" placeholder="At least 6 characters" data-i18n-placeholder="placeholder_min_6" required minlength="6">
+                <button type="button" class="password-toggle-btn" data-target="reg-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-confirm-password" data-i18n="label_confirm_password">Confirm Password *</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="reg-confirm-password" class="form-input" placeholder="Re-enter password" data-i18n-placeholder="placeholder_confirm_password" required minlength="6">
+                <button type="button" class="password-toggle-btn" data-target="reg-confirm-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-password-hint" data-i18n="label_password_hint">Password Hint (Optional)</label>
+              <input type="text" id="reg-password-hint" class="form-input" placeholder="e.g. Favorite tractor brand or village deity" data-i18n-placeholder="placeholder_password_hint" maxlength="150">
+              <div class="form-help" data-i18n="help_password_hint">Add a hint that helps you remember your password. Do not enter your actual password.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-village" data-i18n="label_village">Village / Address</label>
+              <input type="text" id="reg-village" class="form-input" placeholder="e.g. Dindori, Nashik" data-i18n-placeholder="placeholder_village">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-idproof" data-i18n="label_aadhaar">Aadhaar Card Number (12 Digits) *</label>
+              <input type="text" id="reg-idproof" class="form-input" placeholder="e.g. 5421 8921 4412" data-i18n-placeholder="placeholder_aadhaar" required maxlength="14">
+              <div class="form-help" data-i18n="help_aadhaar">Must consist of exactly 12 numeric digits.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" data-i18n="label_crops_grown">Crops Grown (Select all that apply)</label>
+              <div class="crop-chip-grid" id="crop-chip-grid" style="max-height: 180px; overflow-y: auto;">
+                <label class="crop-chip-label"><input type="checkbox" value="Wheat (Sharbati)"> <span class="crop-icon">🌾</span> <span class="crop-chip-name" data-crop-raw="Wheat">Wheat</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Paddy (Basmati)"> <span class="crop-icon">🍚</span> <span class="crop-chip-name" data-crop-raw="Paddy (Rice)">Paddy (Rice)</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Tomato (Hybrid)"> <span class="crop-icon">🍅</span> <span class="crop-chip-name" data-crop-raw="Tomato">Tomato</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Onion (Red Nashik)"> <span class="crop-icon">🧅</span> <span class="crop-chip-name" data-crop-raw="Onion">Onion</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Potato (Jyoti)"> <span class="crop-icon">🥔</span> <span class="crop-chip-name" data-crop-raw="Potato">Potato</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Cotton (Medium Staple)"> <span class="crop-icon">☁️</span> <span class="crop-chip-name" data-crop-raw="Cotton">Cotton</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Soybean (Yellow)"> <span class="crop-icon">🌱</span> <span class="crop-chip-name" data-crop-raw="Soybean">Soybean</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Maize (Kharif)"> <span class="crop-icon">🌽</span> <span class="crop-chip-name" data-crop-raw="Maize">Maize</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Mustard (Black)"> <span class="crop-icon">🌼</span> <span class="crop-chip-name" data-crop-raw="Mustard">Mustard</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Green Gram (Moong)"> <span class="crop-icon">🌿</span> <span class="crop-chip-name" data-crop-raw="Green Gram">Green Gram</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Sugarcane"> <span class="crop-icon">🎋</span> <span class="crop-chip-name" data-crop-raw="Sugarcane">Sugarcane</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Red Chilli (Guntur)"> <span class="crop-icon">🌶️</span> <span class="crop-chip-name" data-crop-raw="Red Chilli">Red Chilli</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Gram (Chana / Chickpea)"> <span class="crop-icon">🧆</span> <span class="crop-chip-name" data-crop-raw="Gram (Chana)">Gram (Chana)</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Tur Dal (Arhar / Pigeon Pea)"> <span class="crop-icon">🥣</span> <span class="crop-chip-name" data-crop-raw="Tur Dal (Arhar)">Tur Dal (Arhar)</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Groundnut (Peanut)"> <span class="crop-icon">🥜</span> <span class="crop-chip-name" data-crop-raw="Groundnut">Groundnut</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Turmeric (Haldi)"> <span class="crop-icon">🟡</span> <span class="crop-chip-name" data-crop-raw="Turmeric">Turmeric</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Cumin Seeds (Jeera)"> <span class="crop-icon">🧂</span> <span class="crop-chip-name" data-crop-raw="Cumin (Jeera)">Cumin (Jeera)</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Banana (Robusta)"> <span class="crop-icon">🍌</span> <span class="crop-chip-name" data-crop-raw="Banana">Banana</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Apple (Royal Delicious)"> <span class="crop-icon">🍎</span> <span class="crop-chip-name" data-crop-raw="Apple">Apple</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Mango (Alphonso / Kesar)"> <span class="crop-icon">🥭</span> <span class="crop-chip-name" data-crop-raw="Mango">Mango</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Jute (Raw Jute)"> <span class="crop-icon">🧶</span> <span class="crop-chip-name" data-crop-raw="Jute">Jute</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Tea (Assam Green Leaf)"> <span class="crop-icon">🍵</span> <span class="crop-chip-name" data-crop-raw="Tea">Tea</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Arecanut (Supari)"> <span class="crop-icon">🌰</span> <span class="crop-chip-name" data-crop-raw="Arecanut">Arecanut</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Coffee (Arabica / Robusta)"> <span class="crop-icon">☕</span> <span class="crop-chip-name" data-crop-raw="Coffee">Coffee</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Garlic (Lahsun)"> <span class="crop-icon">🧄</span> <span class="crop-chip-name" data-crop-raw="Garlic">Garlic</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Ginger (Adrak)"> <span class="crop-icon">🫚</span> <span class="crop-chip-name" data-crop-raw="Ginger">Ginger</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Barley (Jau)"> <span class="crop-icon">🌾</span> <span class="crop-chip-name" data-crop-raw="Barley (Jau)">Barley (Jau)</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Jowar (Sorghum)"> <span class="crop-icon">🌾</span> <span class="crop-chip-name" data-crop-raw="Jowar">Jowar</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Bajra (Pearl Millet)"> <span class="crop-icon">🌾</span> <span class="crop-chip-name" data-crop-raw="Bajra">Bajra</span></label>
+                <label class="crop-chip-label"><input type="checkbox" value="Litchi (Shahi)"> <span class="crop-icon">🍒</span> <span class="crop-chip-name" data-crop-raw="Litchi">Litchi</span></label>
+              </div>
+
+              <div class="custom-crop-wrapper">
+                <input type="text" id="custom-crop-input" class="form-input" placeholder="Add custom crop not listed above" data-i18n-placeholder="placeholder_custom_crop">
+                <button type="button" class="btn btn-secondary" onclick="addCustomCropChip()" data-i18n="btn_add_crop">+ Add</button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="register-submit-btn" data-i18n="btn_complete_farmer_reg">
+              Complete Farmer Registration →
+            </button>
+          </form>
+
+          <div class="auth-form-subswitch">
+            Already registered as a farmer? <a onclick="switchModeAndRole('login', 'farmer')">Farmer Login →</a>
+          </div>
+        </div>
+
+        <!-- Tab 3: Mandi Staff Login Form -->
+        <div class="tab-content" id="tab-content-mandi-login" style="display: none;">
+          <form id="mandi-login-form">
+            <div class="form-group">
+              <label class="form-label" for="mandi-login-phone" data-i18n="label_mandi_phone">Mandi Staff Official Mobile</label>
+              <input type="tel" id="mandi-login-phone" class="form-input" placeholder="e.g. 9999999999" data-i18n-placeholder="placeholder_mandi_phone" required autocomplete="username">
+              <div class="form-help" data-i18n="help_mandi_staff">Authorized APMC Mandi Officers, Weighbridge Staff, & Admins.</div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="mandi-login-password" data-i18n="label_staff_password">Staff Password</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="mandi-login-password" class="form-input" placeholder="Enter password" data-i18n-placeholder="placeholder_staff_password" required autocomplete="current-password">
+                <button type="button" class="password-toggle-btn" data-target="mandi-login-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="forgot-password-link-wrapper" style="text-align: right; margin-top: -0.35rem; margin-bottom: 0.85rem;">
+              <a href="javascript:void(0)" onclick="openForgotPasswordFlow('mandi')" style="font-size: 0.82rem; color: var(--primary-green); text-decoration: none; font-weight: 500;" data-i18n="link_forgot_password">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="mandi-login-btn" data-i18n="btn_mandi_login">
+              Mandi Staff Login →
+            </button>
+          </form>
+
+          <div style="margin-top: 1.25rem; padding: 0.75rem; background: var(--badge-booked-bg); border: 1px solid var(--badge-booked-border); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--badge-booked-text); display: flex; align-items: center; gap: 0.5rem;">
+            <span class="demo-icon">🏢</span> <div><strong>Pre-seeded Staff Account:</strong> Phone: <code>9999999999</code> | Password: <code>admin123</code></div>
+          </div>
+
+          <div class="auth-form-subswitch">
+            Need to register a new Mandi Centre? <a onclick="switchModeAndRole('signup', 'mandi')">Register Mandi & Admin →</a>
+          </div>
+        </div>
+
+        <!-- Tab 4: Register Mandi Centre & Admin Form -->
+        <div class="tab-content" id="tab-content-mandi-register" style="display: none;">
+          <form id="mandi-register-form">
+            <div style="background: var(--alert-success-bg); border-left: 3px solid var(--success); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--alert-success-text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              <span class="demo-icon">🏛️</span> <div data-i18n="mandi_reg_intro">Register a new APMC Mandi Centre along with its primary <strong>Mandi Admin</strong> account.</div>
+            </div>
+
+            <!-- Hidden Selected Centre ID -->
+            <input type="hidden" id="mandi-reg-centre-id" name="centre_id" required>
+
+            <div class="form-group mandi-selector-group">
+              <label class="form-label" for="mandi-reg-search" data-i18n="label_select_mandi_centre">
+                Select Mandi / Procurement Centre * (114 Pan-India APMCs)
+              </label>
+
+              <!-- Search Box -->
+              <div class="mandi-search-box-wrapper">
+                <input 
+                  type="text" 
+                  id="mandi-reg-search" 
+                  class="form-input mandi-search-box" 
+                  placeholder="🔍 Search 114 mandis by name, district, state..." 
+                  autocomplete="off"
+                  data-i18n-placeholder="placeholder_search_114_mandis"
+                >
+                <button type="button" id="mandi-reg-search-clear" class="mandi-search-clear-btn" style="display: none;" title="Clear search">✕</button>
+              </div>
+
+              <!-- Selected Mandi Display Card (shows when a mandi is selected) -->
+              <div id="mandi-selected-card" class="mandi-selected-card" style="display: none;">
+                <div class="mandi-selected-header">
+                  <div class="mandi-selected-icon">🏛️</div>
+                  <div class="mandi-selected-details">
+                    <strong id="mandi-selected-name" class="mandi-selected-name"></strong>
+                    <div id="mandi-selected-location" class="mandi-selected-meta"></div>
+                  </div>
+                  <button type="button" id="mandi-change-btn" class="btn btn-sm btn-outline" data-i18n="btn_change_mandi">Change Mandi</button>
+                </div>
+              </div>
+
+              <!-- Mandi Picker Container -->
+              <div id="mandi-picker-container" class="mandi-picker-container">
+                <div class="mandi-picker-status-bar">
+                  <span id="mandi-picker-count" class="mandi-picker-count" data-i18n="mandi_loading_list">Loading 114 Mandis...</span>
+                  <span class="mandi-picker-legend">
+                    <span class="legend-dot available"></span> <span data-i18n="legend_available">Available</span>
+                    <span class="legend-dot claimed" style="margin-left: 0.5rem;"></span> <span data-i18n="legend_claimed">Already Claimed</span>
+                  </span>
+                </div>
+                <div id="mandi-picker-list" class="mandi-picker-list" role="listbox" aria-label="Procurement Centres">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Auto-populated Mandi Details Preview (Read-only) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label class="form-label" for="mandi-reg-district" data-i18n="label_district">District / City *</label>
+                <input type="text" id="mandi-reg-district" class="form-input" placeholder="Auto-filled from selected mandi" readonly required style="background: var(--bg-card-alt); cursor: default;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="mandi-reg-state-input" data-i18n="label_state">State *</label>
+                <input type="text" id="mandi-reg-state-input" class="form-input" placeholder="Auto-filled from selected mandi" readonly required style="background: var(--bg-card-alt); cursor: default;">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-location" data-i18n="label_location">Location / Address</label>
+              <input type="text" id="mandi-reg-location" class="form-input" placeholder="Auto-filled from selected mandi" readonly style="background: var(--bg-card-alt); cursor: default;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label class="form-label" for="mandi-reg-capacity" data-i18n="label_daily_capacity">Daily Capacity (Farmers/day)</label>
+                <input type="number" id="mandi-reg-capacity" class="form-input" placeholder="100" readonly style="background: var(--bg-card-alt); cursor: default;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="mandi-reg-crops" data-i18n="label_crops_procured">Crops Procured</label>
+                <input type="text" id="mandi-reg-crops" class="form-input" placeholder="e.g. Wheat, Tomato, Onion" readonly style="background: var(--bg-card-alt); cursor: default;">
+              </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px dashed var(--border-color); margin: 1rem 0;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+              <span class="demo-icon">👑</span> <span data-i18n="label_primary_admin">Primary Mandi Admin Details</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-fullname" data-i18n="label_admin_fullname">Admin Full Name *</label>
+              <input type="text" id="mandi-reg-fullname" class="form-input" placeholder="e.g. Rajesh Sharma" data-i18n-placeholder="placeholder_admin_fullname" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-phone" data-i18n="label_admin_phone">Official Mobile Number (10 Digits) *</label>
+              <input type="tel" id="mandi-reg-phone" class="form-input" placeholder="e.g. 9822001122" required maxlength="10">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-password" data-i18n="label_admin_password">Create Admin Password *</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="mandi-reg-password" class="form-input" placeholder="At least 6 characters" data-i18n-placeholder="placeholder_min_6" required minlength="6">
+                <button type="button" class="password-toggle-btn" data-target="mandi-reg-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-confirm-password" data-i18n="label_confirm_password">Confirm Admin Password *</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="mandi-reg-confirm-password" class="form-input" placeholder="Re-enter password" data-i18n-placeholder="placeholder_confirm_password" required minlength="6">
+                <button type="button" class="password-toggle-btn" data-target="mandi-reg-confirm-password" aria-label="Show password" title="Show password">
+                  <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="eye-icon eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="mandi-reg-password-hint" data-i18n="label_password_hint">Password Hint (Optional)</label>
+              <input type="text" id="mandi-reg-password-hint" class="form-input" placeholder="e.g. Center establishment year or landmark" data-i18n-placeholder="placeholder_password_hint" maxlength="150">
+              <div class="form-help" data-i18n="help_password_hint">Add a hint that helps you remember your password. Do not enter your actual password.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="mandi-register-btn" data-i18n="btn_register_mandi">
+              Register Mandi & Admin Account →
+            </button>
+          </form>
+
+          <div class="auth-form-subswitch">
+            Already registered as Mandi staff? <a onclick="switchModeAndRole('login', 'mandi')">Mandi Staff Login →</a>
+          </div>
+        </div>
+
+        <!-- Tab 5: Password Hint Recovery View -->
+        <div class="tab-content" id="tab-content-forgot-password" style="display: none;">
+          <div style="text-align: center; margin-bottom: 1.25rem;">
+            <div style="font-size: 2.2rem; margin-bottom: 0.25rem;">💡</div>
+            <h4 style="margin: 0; font-size: 1.15rem; color: var(--text-main);" data-i18n="password_hint_title">Password Hint Reminder</h4>
+            <p style="margin: 0.35rem 0 0 0; font-size: 0.82rem; color: var(--text-muted);" id="fp-role-subtitle" data-i18n="password_hint_subtitle">
+              Enter your registered mobile number to view your password hint
+            </p>
+          </div>
+
+          <!-- Step 1: Input Registered Mobile Number -->
+          <div id="fp-step-phone">
+            <form id="fp-phone-form" onsubmit="handleForgotPasswordHint(event)">
+              <div class="form-group">
+                <label class="form-label" for="fp-phone-input" data-i18n="forgot_phone_label">Registered Mobile Number (10 Digits)</label>
+                <input type="tel" id="fp-phone-input" class="form-input" placeholder="e.g. 9822001122" data-i18n-placeholder="placeholder_phone_10" required maxlength="10">
+                <div class="form-help" data-i18n="help_phone">Must be a valid 10-digit mobile number starting with 6, 7, 8, or 9.</div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block" id="fp-phone-submit-btn" data-i18n="btn_get_hint">
+                Get Password Hint →
+              </button>
+            </form>
+          </div>
+
+          <!-- Step 2: Password Hint Result View -->
+          <div id="fp-step-result" style="display: none;">
+            <!-- Hint Found Box -->
+            <div id="fp-hint-found-box" style="display: none; background: var(--bg-card-alt); border: 1.5px solid var(--primary-green); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
+              <div style="font-size: 0.88rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span>💡</span> <span data-i18n="your_password_hint_label">Your Password Hint:</span>
+              </div>
+              <div id="fp-hint-text" style="font-size: 1.05rem; font-weight: 600; color: var(--text-main); background: var(--bg-card); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 0.75rem; word-break: break-word;">
+                <!-- Hint displayed here -->
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0; line-height: 1.45;" data-i18n="hint_reminder_text">
+                Use this hint to remember your password and return to the login page.
+              </p>
+            </div>
+
+            <!-- Hint Not Configured / Account Not Found Box (Privacy-preserving) -->
+            <div id="fp-hint-empty-box" style="display: none; background: var(--bg-card-alt); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
+              <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span>ℹ️</span> <span data-i18n="hint_recovery_info">Account Recovery Info</span>
+              </div>
+              <p id="fp-empty-message" style="font-size: 0.85rem; color: var(--text-main); line-height: 1.45; margin: 0 0 0.5rem 0;" data-i18n="hint_not_found_neutral">
+                If an account exists with this mobile number, your hint information will be displayed.
+              </p>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.45;" data-i18n="hint_helpline_note">
+                If you did not configure a hint or cannot recall your password, please contact AgriConnect Mandi Support or your local APMC helpdesk for assistance.
+              </p>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-block" onclick="backToLoginFromFp()" data-i18n="btn_back_to_login">
+              ← Back to Login
+            </button>
+          </div>
+
+          <div class="auth-form-subswitch" style="margin-top: 1.25rem;">
+            <a href="javascript:void(0)" onclick="backToLoginFromFp()" data-i18n="btn_back_to_login">← Back to Login</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-inner">
       <div>
-        <strong>AgriConnect</strong> — Smart Agricultural Procurement &amp; Live Queue Infrastructure.<br>
-        <span style="font-size: 0.75rem;">Supporting farmers with transparent procurement workflows and fair market prices.</span>
+        <strong data-i18n="brand_title">AgriConnect</strong> — <span data-i18n="footer_rights">Smart Agricultural Procurement &amp; Live Queue Infrastructure.</span><br>
+        <span style="font-size: 0.75rem;" data-i18n="footer_support_farmers">Supporting farmers with transparent procurement workflows and fair market prices.</span>
       </div>
       <div>
-        <a href="#mandi-directory" style="margin-right: 1rem;">Mandi Directory</a>
-        <a href="#mandi-rates" style="margin-right: 1rem;">Mandi Rates</a>
-        <a href="javascript:void(0)" onclick="focusLoginTab()">Procurement Staff Login</a>
+        <a href="#mandi-directory" style="margin-right: 1rem;" data-i18n="nav_mandi_directory">Mandi Directory</a>
+        <a href="#mandi-rates" data-i18n="nav_mandi_rates">Mandi Rates</a>
       </div>
     </div>
   </footer>
@@ -424,29 +663,309 @@
   
   <!-- Client Scripts -->
   <script src="js/auth.js?v=2.3"></script>
-  <script src="js/ticker.js"></script>
+  <script src="js/ticker.js?v=3.2"></script>
   <script src="js/centres-directory.js?v=2.3"></script>
 
   <script>
     // Redirect already logged-in users to their respective dashboards
     AgriAuth.redirectIfLoggedIn();
 
-    // Tab switcher (Farmer Login, Farmer Register, Mandi Login, Mandi Register)
-    function switchAuthTab(tabName) {
-      const tabs = ['login', 'register', 'mandi-login', 'mandi-register'];
+    let currentAuthMode = 'login'; // 'login', 'signup', or 'forgot-password'
+    let currentAuthRole = null;    // 'farmer' or 'mandi' or null
+
+    let fpSession = {
+      role: 'farmer',
+      phone: '',
+      userName: ''
+    };
+
+    function openAuthModal(mode = 'login', role = null) {
+      currentAuthMode = (mode === 'signup' || mode === 'register') ? 'signup' : (mode === 'forgot-password' ? 'forgot-password' : 'login');
+      currentAuthRole = role;
+
+      const modal = document.getElementById('auth-modal');
+      if (!modal) return;
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      if (currentAuthMode === 'forgot-password') {
+        openForgotPasswordFlow(role || 'farmer');
+      } else if (role) {
+        renderAuthView(role);
+      } else {
+        renderRoleSelection();
+      }
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById('auth-modal');
+      if (!modal) return;
+      modal.style.display = 'none';
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      currentAuthRole = null;
+    }
+
+    function selectRole(role) {
+      currentAuthRole = role;
+      renderAuthView(role);
+    }
+
+    function backToRoleSelect() {
+      if (currentAuthMode === 'forgot-password') {
+        backToLoginFromFp();
+        return;
+      }
+      currentAuthRole = null;
+      renderRoleSelection();
+    }
+
+    function switchModeAndRole(newMode, newRole) {
+      currentAuthMode = newMode;
+      currentAuthRole = newRole;
+      renderAuthView(newRole);
+    }
+
+    function openForgotPasswordFlow(role = 'farmer') {
+      currentAuthMode = 'forgot-password';
+      currentAuthRole = role;
+
+      const modal = document.getElementById('auth-modal');
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      const roleSelectView = document.getElementById('auth-role-select-view');
+      if (roleSelectView) roleSelectView.style.display = 'none';
+
+      const backBtn = document.getElementById('auth-modal-back-btn');
+      if (backBtn) backBtn.style.display = 'inline-flex';
+
+      const tabs = ['login', 'register', 'mandi-login', 'mandi-register', 'forgot-password'];
       tabs.forEach(t => {
-        const btn = document.getElementById(`tab-btn-${t}`);
-        const content = document.getElementById(`tab-content-${t}`);
-        if (btn) btn.classList.toggle('active', t === tabName);
-        if (content) content.classList.toggle('active', t === tabName);
+        const el = document.getElementById(`tab-content-${t}`);
+        if (el) el.style.display = 'none';
       });
+
+      const fpTab = document.getElementById('tab-content-forgot-password');
+      if (fpTab) fpTab.style.display = 'block';
+
+      const titleEl = document.getElementById('auth-modal-title');
+      const tr = (k, def) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, def) : def);
+      if (titleEl) titleEl.textContent = tr('password_hint_title', '💡 Password Hint Reminder');
+
+      const subtitleEl = document.getElementById('fp-role-subtitle');
+      if (subtitleEl) {
+        subtitleEl.textContent = tr('password_hint_subtitle', 'Enter your registered mobile number to view your password hint');
+      }
+
+      fpSession = { role, phone: '' };
+      showFpStep('phone');
+
+      setTimeout(() => {
+        const p = document.getElementById('fp-phone-input');
+        if (p) {
+          p.value = '';
+          p.focus();
+        }
+      }, 60);
+    }
+
+    function showFpStep(step) {
+      const phoneStep = document.getElementById('fp-step-phone');
+      const resultStep = document.getElementById('fp-step-result');
+      if (phoneStep) phoneStep.style.display = (step === 'phone') ? 'block' : 'none';
+      if (resultStep) resultStep.style.display = (step === 'result') ? 'block' : 'none';
+    }
+
+    function backToLoginFromFp() {
+      switchModeAndRole('login', fpSession.role || currentAuthRole || 'farmer');
+    }
+
+    async function handleForgotPasswordHint(e) {
+      e.preventDefault();
+      const phone = document.getElementById('fp-phone-input').value.trim();
+      const btn = document.getElementById('fp-phone-submit-btn');
+
+      const phoneCheck = AgriAuth.validatePhoneNumber(phone, false);
+      if (!phoneCheck.valid) {
+        alert(phoneCheck.message);
+        document.getElementById('fp-phone-input').focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Retrieving Password Hint...';
+
+      try {
+        const res = await AgriAuth.requestPasswordHint(phone, fpSession.role);
+        fpSession.phone = phone;
+
+        const foundBox = document.getElementById('fp-hint-found-box');
+        const emptyBox = document.getElementById('fp-hint-empty-box');
+        const hintText = document.getElementById('fp-hint-text');
+        const emptyMsg = document.getElementById('fp-empty-message');
+
+        showFpStep('result');
+
+        if (res.has_hint && res.hint) {
+          if (foundBox) foundBox.style.display = 'block';
+          if (emptyBox) emptyBox.style.display = 'none';
+          if (hintText) hintText.textContent = res.hint;
+        } else {
+          if (foundBox) foundBox.style.display = 'none';
+          if (emptyBox) emptyBox.style.display = 'block';
+          if (emptyMsg) {
+            emptyMsg.textContent = res.message || 'If an account exists with this mobile number, your hint information will be displayed.';
+          }
+        }
+      } catch (err) {
+        alert('Server error retrieving hint: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Get Password Hint →';
+      }
+    }
+
+    function renderRoleSelection() {
+      const roleSelectView = document.getElementById('auth-role-select-view');
+      const tabs = ['login', 'register', 'mandi-login', 'mandi-register', 'forgot-password'];
+      tabs.forEach(t => {
+        const el = document.getElementById(`tab-content-${t}`);
+        if (el) el.style.display = 'none';
+      });
+
+      if (roleSelectView) roleSelectView.style.display = 'block';
+
+      const backBtn = document.getElementById('auth-modal-back-btn');
+      if (backBtn) backBtn.style.display = 'none';
+
+      const titleEl = document.getElementById('auth-modal-title');
+      const headingEl = document.getElementById('role-select-heading');
+      const subheadingEl = document.getElementById('role-select-subheading');
+      const farmerBtn = document.getElementById('role-farmer-btn');
+      const mandiBtn = document.getElementById('role-mandi-btn');
+      const footerSwitch = document.getElementById('role-footer-switch');
+
+      const isLogin = currentAuthMode === 'login';
+      const tr = (k, def) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, def) : def);
+
+      if (isLogin) {
+        if (titleEl) titleEl.textContent = tr('auth_modal_login_title', 'Login to AgriConnect');
+        if (headingEl) headingEl.textContent = tr('role_select_heading_login', 'Select Your Login Portal');
+        if (subheadingEl) subheadingEl.textContent = tr('role_select_subheading_login', 'Choose whether you are logging in as a Farmer or Mandi APMC Desk');
+        if (farmerBtn) farmerBtn.textContent = tr('role_farmer_btn_login', 'Login as Farmer →');
+        if (mandiBtn) mandiBtn.textContent = tr('role_mandi_btn_login', 'Login as Mandi Staff →');
+        if (footerSwitch) {
+          footerSwitch.innerHTML = `${tr('footer_no_account', "Don't have an account?")} <a href="javascript:void(0)" onclick="openAuthModal('signup')">${tr('footer_signup_here', 'Sign Up here')}</a>`;
+        }
+      } else {
+        if (titleEl) titleEl.textContent = tr('auth_modal_signup_title', 'Create AgriConnect Account');
+        if (headingEl) headingEl.textContent = tr('role_select_heading_signup', 'Choose Registration Role');
+        if (subheadingEl) subheadingEl.textContent = tr('role_select_subheading_signup', 'Select your role to register a new Farmer account or APMC Mandi Centre');
+        if (farmerBtn) farmerBtn.textContent = tr('role_farmer_btn_signup', 'Register as Farmer →');
+        if (mandiBtn) mandiBtn.textContent = tr('role_mandi_btn_signup', 'Register Mandi & Admin →');
+        if (footerSwitch) {
+          footerSwitch.innerHTML = `${tr('footer_have_account', 'Already have an account?')} <a href="javascript:void(0)" onclick="openAuthModal('login')">${tr('footer_login_here', 'Login here')}</a>`;
+        }
+      }
+    }
+
+    function renderAuthView(role) {
+      const roleSelectView = document.getElementById('auth-role-select-view');
+      if (roleSelectView) roleSelectView.style.display = 'none';
+
+      const backBtn = document.getElementById('auth-modal-back-btn');
+      if (backBtn) backBtn.style.display = 'inline-flex';
+
+      const tabs = ['login', 'register', 'mandi-login', 'mandi-register', 'forgot-password'];
+      tabs.forEach(t => {
+        const el = document.getElementById(`tab-content-${t}`);
+        if (el) el.style.display = 'none';
+      });
+
+      const titleEl = document.getElementById('auth-modal-title');
+
+      let targetTab = '';
+      if (currentAuthMode === 'login') {
+        if (role === 'farmer') {
+          targetTab = 'login';
+          if (titleEl) titleEl.textContent = (window.AgriLang ? AgriLang.t('farmer_login_heading', '🌾 Farmer Secure Login') : '🌾 Farmer Secure Login');
+          setTimeout(() => {
+            const p = document.getElementById('login-phone');
+            if (p) p.focus();
+          }, 60);
+        } else {
+          targetTab = 'mandi-login';
+          if (titleEl) titleEl.textContent = (window.AgriLang ? AgriLang.t('mandi_login_heading', '🏢 Mandi Staff Login') : '🏢 Mandi Staff Login');
+          setTimeout(() => {
+            const p = document.getElementById('mandi-login-phone');
+            if (p) p.focus();
+          }, 60);
+        }
+      } else {
+        if (role === 'farmer') {
+          targetTab = 'register';
+          if (titleEl) titleEl.textContent = (window.AgriLang ? AgriLang.t('farmer_reg_heading', '🌾 Farmer Registration') : '🌾 Farmer Registration');
+          setTimeout(() => {
+            const f = document.getElementById('reg-fullname');
+            if (f) f.focus();
+          }, 60);
+        } else {
+          targetTab = 'mandi-register';
+          if (titleEl) titleEl.textContent = (window.AgriLang ? AgriLang.t('mandi_reg_heading', '🏛️ Register Mandi Centre & Admin') : '🏛️ Register Mandi Centre & Admin');
+          loadRegistrationMandis();
+          setTimeout(() => {
+            const s = document.getElementById('mandi-reg-search');
+            if (s && s.offsetParent !== null) s.focus();
+          }, 60);
+        }
+      }
+
+      const activeEl = document.getElementById(`tab-content-${targetTab}`);
+      if (activeEl) activeEl.style.display = 'block';
+    }
+
+    // Backwards compatibility for external callers
+    function switchAuthTab(tabName) {
+      if (tabName === 'login') openAuthModal('login', 'farmer');
+      else if (tabName === 'register') openAuthModal('signup', 'farmer');
+      else if (tabName === 'mandi-login') openAuthModal('login', 'mandi');
+      else if (tabName === 'mandi-register') openAuthModal('signup', 'mandi');
     }
 
     function focusLoginTab() {
-      switchAuthTab('login');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      document.getElementById('login-phone').focus();
+      openAuthModal('login');
     }
+
+    // Modal dismiss listeners (ESC key and backdrop click)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAuthModal();
+    });
+
+    document.addEventListener('click', (e) => {
+      const modal = document.getElementById('auth-modal');
+      if (modal && e.target === modal) {
+        closeAuthModal();
+      }
+    });
+
+    // Deep link hash support (#login, #signup, #login-farmer, #login-mandi, #forgot-password, etc.)
+    function handleAuthHash() {
+      const hash = (window.location.hash || '').toLowerCase();
+      if (hash === '#login') openAuthModal('login');
+      else if (hash === '#signup' || hash === '#register') openAuthModal('signup');
+      else if (hash === '#login-farmer' || hash === '#farmer-login') openAuthModal('login', 'farmer');
+      else if (hash === '#login-mandi' || hash === '#mandi-login') openAuthModal('login', 'mandi');
+      else if (hash === '#signup-farmer' || hash === '#farmer-register' || hash === '#farmer-signup') openAuthModal('signup', 'farmer');
+      else if (hash === '#signup-mandi' || hash === '#mandi-register' || hash === '#mandi-signup') openAuthModal('signup', 'mandi');
+      else if (hash === '#forgot-password' || hash === '#forgot-password-farmer') openForgotPasswordFlow('farmer');
+      else if (hash === '#forgot-password-mandi') openForgotPasswordFlow('mandi');
+    }
+    window.addEventListener('hashchange', handleAuthHash);
 
     // Add custom crop chip dynamically
     function addCustomCropChip() {
@@ -460,6 +979,159 @@
       label.innerHTML = `<input type="checkbox" value="${val}" checked> <span class="crop-icon">🌱</span> <span>${val}</span>`;
       grid.appendChild(label);
       input.value = '';
+    }
+
+    // 114 Mandis Registration Selection Management
+    let regMandisList = [];
+    let selectedMandiId = null;
+
+    async function loadRegistrationMandis() {
+      const pickerList = document.getElementById('mandi-picker-list');
+      if (!pickerList) return;
+
+      if (regMandisList.length === 0) {
+        try {
+          const res = await fetch('/api/centres');
+          const data = await res.json();
+          if (data.success && Array.isArray(data.centres)) {
+            regMandisList = data.centres;
+          }
+        } catch (err) {
+          console.error('Failed to load mandis for registration:', err);
+        }
+      }
+
+      renderRegistrationMandisList();
+    }
+
+    function renderRegistrationMandisList() {
+      const pickerList = document.getElementById('mandi-picker-list');
+      const countEl = document.getElementById('mandi-picker-count');
+      const searchInput = document.getElementById('mandi-reg-search');
+      if (!pickerList) return;
+
+      const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+      const tr = (k, def) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, def) : def);
+
+      const filtered = regMandisList.filter(c => {
+        if (!query) return true;
+        const name = (c.centre_name || '').toLowerCase();
+        const city = (c.city || '').toLowerCase();
+        const state = (c.state || '').toLowerCase();
+        const location = (c.location || '').toLowerCase();
+        return name.includes(query) || city.includes(query) || state.includes(query) || location.includes(query);
+      });
+
+      const totalCount = regMandisList.length;
+      const claimedCount = regMandisList.filter(c => c.is_claimed).length;
+      const availableCount = totalCount - claimedCount;
+
+      if (countEl) {
+        if (query) {
+          countEl.textContent = `${filtered.length} / ${totalCount} ${tr('mandi_mandis_found', 'Mandis found')}`;
+        } else {
+          countEl.textContent = `${totalCount} Mandis (${availableCount} ${tr('legend_available', 'Available')}, ${claimedCount} ${tr('legend_claimed', 'Claimed')})`;
+        }
+      }
+
+      if (filtered.length === 0) {
+        pickerList.innerHTML = `<div class="mandi-picker-empty">${tr('mandi_none_found', 'No mandis match your search filter.')}</div>`;
+        return;
+      }
+
+      const availableBadgeText = tr('badge_available', 'Available');
+      const claimedBadgeText = tr('badge_claimed', 'Already Registered');
+
+      pickerList.innerHTML = filtered.map(c => {
+        const isClaimed = !!c.is_claimed;
+        const isSelected = selectedMandiId === c.centre_id;
+        const itemClass = `mandi-picker-item ${isClaimed ? 'claimed' : 'available'} ${isSelected ? 'selected' : ''}`;
+        const badgeClass = isClaimed ? 'badge-claimed' : 'badge-available';
+        const badgeText = isClaimed ? `🔒 ${claimedBadgeText}` : `✓ ${availableBadgeText}`;
+        const ariaDisabled = isClaimed ? 'aria-disabled="true"' : '';
+        const titleText = isClaimed ? tr('mandi_error_claimed', 'This Mandi Centre is already registered by a Mandi Admin and cannot be claimed again.') : '';
+
+        return `
+          <div class="${itemClass}" data-centre-id="${c.centre_id}" ${ariaDisabled} title="${titleText}" onclick="handleMandiItemClick(${c.centre_id})">
+            <div class="mandi-item-main">
+              <div class="mandi-item-name">${c.centre_name}</div>
+              <div class="mandi-item-meta">📍 ${c.city || ''}${c.state ? ', ' + c.state : ''} · ⏱ ${c.opening_time || '08:00'} - ${c.closing_time || '17:00'}</div>
+            </div>
+            <span class="mandi-badge ${badgeClass}">${badgeText}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleMandiItemClick(centreId) {
+      const centre = regMandisList.find(c => c.centre_id === centreId);
+      if (!centre) return;
+
+      const tr = (k, def) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, def) : def);
+
+      if (centre.is_claimed) {
+        if (window.AgriAuth && typeof AgriAuth.showToast === 'function') {
+          AgriAuth.showToast(tr('mandi_error_claimed', 'This Mandi Centre is already registered by a Mandi Admin and cannot be claimed again.'), 'error');
+        } else {
+          alert(tr('mandi_error_claimed', 'This Mandi Centre is already registered by a Mandi Admin and cannot be claimed again.'));
+        }
+        return;
+      }
+
+      selectMandiCentre(centre);
+    }
+
+    function selectMandiCentre(centre) {
+      selectedMandiId = centre.centre_id;
+
+      // Update hidden centre id
+      const hiddenIdInput = document.getElementById('mandi-reg-centre-id');
+      if (hiddenIdInput) hiddenIdInput.value = centre.centre_id;
+
+      // Populate preview fields
+      const districtEl = document.getElementById('mandi-reg-district');
+      const stateEl = document.getElementById('mandi-reg-state-input');
+      const locationEl = document.getElementById('mandi-reg-location');
+      const capacityEl = document.getElementById('mandi-reg-capacity');
+      const cropsEl = document.getElementById('mandi-reg-crops');
+
+      if (districtEl) districtEl.value = centre.city || '';
+      if (stateEl) stateEl.value = centre.state || '';
+      if (locationEl) locationEl.value = centre.location || `${centre.city}, ${centre.state}`;
+      if (capacityEl) capacityEl.value = centre.daily_capacity || 100;
+      if (cropsEl) cropsEl.value = centre.crops_procured || 'Wheat, Paddy, Maize, Cotton';
+
+      // Update Selected Card
+      const card = document.getElementById('mandi-selected-card');
+      const cardName = document.getElementById('mandi-selected-name');
+      const cardLoc = document.getElementById('mandi-selected-location');
+      const pickerContainer = document.getElementById('mandi-picker-container');
+      const searchWrapper = document.querySelector('.mandi-search-box-wrapper');
+
+      if (cardName) cardName.textContent = centre.centre_name;
+      if (cardLoc) cardLoc.textContent = `📍 ${centre.city}, ${centre.state} · Capacity: ${centre.daily_capacity || 100} farmers/day`;
+      if (card) card.style.display = 'block';
+
+      // Collapse picker list & search box
+      if (pickerContainer) pickerContainer.style.display = 'none';
+      if (searchWrapper) searchWrapper.style.display = 'none';
+
+      // Re-render list to reflect selection
+      renderRegistrationMandisList();
+    }
+
+    function resetMandiSelection() {
+      const card = document.getElementById('mandi-selected-card');
+      const pickerContainer = document.getElementById('mandi-picker-container');
+      const searchWrapper = document.querySelector('.mandi-search-box-wrapper');
+      const searchInput = document.getElementById('mandi-reg-search');
+
+      if (card) card.style.display = 'none';
+      if (pickerContainer) pickerContainer.style.display = 'block';
+      if (searchWrapper) searchWrapper.style.display = 'flex';
+      if (searchInput) {
+        searchInput.focus();
+      }
     }
 
     // Initialize Ticker & Form Handlers
@@ -531,12 +1203,30 @@
       const regForm = document.getElementById('register-form');
       regForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const tr = (k, def) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, def) : def);
+
         const fullName = document.getElementById('reg-fullname').value;
         const phone = document.getElementById('reg-phone').value;
         const password = document.getElementById('reg-password').value;
+        const confirmPassword = document.getElementById('reg-confirm-password').value;
+        const passwordHint = (document.getElementById('reg-password-hint').value || '').trim();
         const village = document.getElementById('reg-village').value;
         const idProof = document.getElementById('reg-idproof').value;
         const btn = document.getElementById('register-submit-btn');
+
+        // Client-side password match validation
+        if (password !== confirmPassword) {
+          alert(tr('err_password_mismatch', 'Passwords do not match. Please re-enter.'));
+          document.getElementById('reg-confirm-password').focus();
+          return;
+        }
+
+        // Validate password hint does not equal password
+        if (passwordHint && passwordHint.toLowerCase() === password.toLowerCase()) {
+          alert(tr('err_hint_same_as_password', 'Password hint cannot be identical to your password. Please provide a reminder hint.'));
+          document.getElementById('reg-password-hint').focus();
+          return;
+        }
 
         // Client-side phone validation
         const phoneCheck = AgriAuth.validatePhoneNumber(phone);
@@ -572,14 +1262,15 @@
               password,
               village,
               id_proof_number: idProof,
-              crops: checkedCrops
+              crops: checkedCrops,
+              password_hint: passwordHint || undefined
             })
           });
 
           const data = await res.json();
           if (data.success) {
             AgriAuth.setAuthSession(data.token, data.user);
-            AgriAuth.showToast('Registration successful! Redirecting to dashboard...', 'success');
+            AgriAuth.showToast(`Welcome to AgriConnect, ${data.user.full_name}! Registration completed.`, 'success');
             setTimeout(() => {
               window.location.href = '/dashboard.html';
             }, 600);
@@ -632,21 +1323,73 @@
         });
       }
 
+      // Mandi Search & Selection Listeners
+      const mandiSearchInput = document.getElementById('mandi-reg-search');
+      const mandiClearBtn = document.getElementById('mandi-reg-search-clear');
+      if (mandiSearchInput) {
+        mandiSearchInput.addEventListener('input', (e) => {
+          if (mandiClearBtn) mandiClearBtn.style.display = e.target.value.trim() ? 'block' : 'none';
+          renderRegistrationMandisList();
+        });
+      }
+      if (mandiClearBtn) {
+        mandiClearBtn.addEventListener('click', () => {
+          if (mandiSearchInput) {
+            mandiSearchInput.value = '';
+            mandiClearBtn.style.display = 'none';
+            mandiSearchInput.focus();
+          }
+          renderRegistrationMandisList();
+        });
+      }
+
+      const mandiChangeBtn = document.getElementById('mandi-change-btn');
+      if (mandiChangeBtn) {
+        mandiChangeBtn.addEventListener('click', () => {
+          resetMandiSelection();
+        });
+      }
+
       // 4. Mandi Register Form Submit Handler
       const mandiRegForm = document.getElementById('mandi-register-form');
       if (mandiRegForm) {
         mandiRegForm.addEventListener('submit', async (e) => {
           e.preventDefault();
-          const name = document.getElementById('mandi-reg-name').value;
-          const district = document.getElementById('mandi-reg-district').value;
-          const state = document.getElementById('mandi-reg-state-input').value;
-          const location = document.getElementById('mandi-reg-location').value;
-          const dailyCapacity = document.getElementById('mandi-reg-capacity').value;
-          const crops = document.getElementById('mandi-reg-crops').value;
+          const tr = (k, def) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, def) : def);
+
+          const centreId = document.getElementById('mandi-reg-centre-id').value;
+          if (!centreId) {
+            alert(tr('mandi_error_select_required', 'Please select an available Mandi Centre from the list before registering.'));
+            resetMandiSelection();
+            return;
+          }
+
+          // Client check: ensure not claimed
+          const chosenCentre = regMandisList.find(c => c.centre_id === Number(centreId));
+          if (chosenCentre && chosenCentre.is_claimed) {
+            alert(tr('mandi_error_claimed', 'This Mandi Centre is already registered by a Mandi Admin and cannot be claimed again.'));
+            resetMandiSelection();
+            return;
+          }
+
           const adminName = document.getElementById('mandi-reg-fullname').value;
           const adminPhone = document.getElementById('mandi-reg-phone').value;
           const adminPassword = document.getElementById('mandi-reg-password').value;
+          const adminConfirmPassword = document.getElementById('mandi-reg-confirm-password').value;
+          const adminPasswordHint = (document.getElementById('mandi-reg-password-hint').value || '').trim();
           const btn = document.getElementById('mandi-register-btn');
+
+          if (adminPassword !== adminConfirmPassword) {
+            alert(tr('err_password_mismatch', 'Passwords do not match. Please re-enter.'));
+            document.getElementById('mandi-reg-confirm-password').focus();
+            return;
+          }
+
+          if (adminPasswordHint && adminPasswordHint.toLowerCase() === adminPassword.toLowerCase()) {
+            alert(tr('err_hint_same_as_password', 'Password hint cannot be identical to your password. Please provide a reminder hint.'));
+            document.getElementById('mandi-reg-password-hint').focus();
+            return;
+          }
 
           const phoneCheck = AgriAuth.validatePhoneNumber(adminPhone, false);
           if (!phoneCheck.valid) {
@@ -663,22 +1406,18 @@
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                name,
-                district,
-                state,
-                location,
-                daily_capacity: dailyCapacity,
-                crops_procured: crops,
+                centre_id: Number(centreId),
                 admin_name: adminName,
                 admin_phone: adminPhone,
-                admin_password: adminPassword
+                admin_password: adminPassword,
+                password_hint: adminPasswordHint || undefined
               })
             });
 
             const data = await res.json();
             if (data.success) {
               AgriAuth.setAuthSession(data.token, data.user);
-              AgriAuth.showToast('Mandi centre and Admin account registered successfully!', 'success');
+              AgriAuth.showToast(`Mandi Centre registered successfully! Welcome, ${data.user.full_name}.`, 'success');
               setTimeout(() => {
                 window.location.href = '/mandi.html';
               }, 600);
@@ -693,6 +1432,22 @@
           }
         });
       }
+
+      // Re-render auth modal on language change if open
+      window.addEventListener('languageChanged', () => {
+        const modal = document.getElementById('auth-modal');
+        if (modal && modal.classList.contains('active')) {
+          if (currentAuthRole) {
+            renderAuthView(currentAuthRole);
+          } else {
+            renderRoleSelection();
+          }
+        }
+        renderRegistrationMandisList();
+      });
+
+      // Check initial URL hash for direct modal opening
+      handleAuthHash();
     });
   </script>
 

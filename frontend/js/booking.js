@@ -407,25 +407,34 @@ async function loadMyBookingsTable() {
     const data = await res.json();
 
     if (!data.success || !Array.isArray(data.bookings) || data.bookings.length === 0) {
+      const emptyMsg = (window.AgriLang && typeof window.AgriLang.t === 'function')
+        ? window.AgriLang.t('no_bookings_yet', 'No bookings found yet. Book your first procurement slot above!')
+        : 'No bookings found yet. Book your first procurement slot above!';
       tableBody.innerHTML = `
         <tr>
           <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">
-            No bookings found yet. Book your first procurement slot above!
+            ${emptyMsg}
           </td>
         </tr>
       `;
       return;
     }
 
+    const t = (k, f) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, f) : f);
+    const tStat = (s) => (window.AgriLang && typeof window.AgriLang.tStatus === 'function' ? window.AgriLang.tStatus(s) : (s || '').replace('_', ' '));
+
     tableBody.innerHTML = data.bookings.map(b => {
       const finalAmtDisplay = b.final_amount ? `₹${Number(b.final_amount).toLocaleString('en-IN')}` : '—';
       const finalQtyDisplay = b.final_quantity_kg ? `${b.final_quantity_kg} kg` : `${b.estimated_quantity_kg} kg (est)`;
       const isCompleted = b.booking_status === 'completed' || b.procurement_status === 'accepted';
+      const receiptText = t('btn_receipt', 'Receipt');
       const actionDisplay = isCompleted
         ? `<button class="btn btn-secondary btn-sm" onclick="AgriBooking.viewReceipt(${b.booking_id})" style="font-size: 0.75rem; padding: 0.25rem 0.55rem;">
-            <span class="btn-icon">📄</span> <span>Receipt</span>
+            <span class="btn-icon">📄</span> <span data-i18n="btn_receipt">${receiptText}</span>
           </button>`
         : '—';
+
+      const tokenLabel = t('queue_token_label', 'Queue Token');
 
       return `
         <tr>
@@ -439,14 +448,14 @@ async function loadMyBookingsTable() {
           </td>
           <td>
             <div style="display: inline-flex; align-items: center; gap: 0.35rem;">
-              <span class="crop-icon">${AgriTicker.getCropIcon(b.crop_name)}</span> <strong>${b.crop_name}</strong>
+              <span class="crop-icon">${AgriTicker.getCropIcon(b.crop_name)}</span> <strong data-crop-raw="${b.crop_name}">${(window.AgriLang && typeof window.AgriLang.tCrop === 'function') ? window.AgriLang.tCrop(b.crop_name) : b.crop_name}</strong>
             </div><br>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">Queue Token #${b.queue_number}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">${tokenLabel} #${b.queue_number}</span>
           </td>
           <td>${finalQtyDisplay}</td>
-          <td><span class="badge badge-${b.booking_status}">${b.booking_status.replace('_', ' ')}</span></td>
-          <td><span class="badge badge-${b.procurement_status}">${b.procurement_status}</span></td>
-          <td><span class="badge badge-${b.payment_status}">${b.payment_status}</span></td>
+          <td><span class="badge badge-${b.booking_status}">${tStat(b.booking_status)}</span></td>
+          <td><span class="badge badge-${b.procurement_status}">${tStat(b.procurement_status)}</span></td>
+          <td><span class="badge badge-${b.payment_status}">${tStat(b.payment_status)}</span></td>
           <td style="font-family: var(--font-mono); font-weight: 700; color: var(--primary-dark);">${finalAmtDisplay}</td>
           <td>${actionDisplay}</td>
         </tr>
@@ -478,6 +487,13 @@ async function viewReceipt(bookingId) {
     alert('Failed to load receipt from server.');
   }
 }
+
+// Re-render bookings table when language changes
+window.addEventListener('languageChanged', () => {
+  if (document.getElementById('my-bookings-body')) {
+    loadMyBookingsTable();
+  }
+});
 
 window.AgriBooking = {
   initBookingModule,

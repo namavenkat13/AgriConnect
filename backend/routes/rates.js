@@ -28,12 +28,20 @@ function formatRate(row) {
   };
 }
 
+let lastLazyTick = 0;
+
 /**
  * GET /api/rates
  * Public endpoint: returns list of all current crop rates with trends
  */
 router.get('/', async (req, res) => {
   try {
+    // Opportunistic lazy market tick on serverless runtimes where setInterval is frozen
+    if (process.env.VERCEL === '1' && (Date.now() - lastLazyTick > 25000)) {
+      lastLazyTick = Date.now();
+      await tickMarketRate();
+    }
+
     const rows = await db.query('SELECT rate_id, crop_name, price_per_quintal, previous_price, updated_at FROM crop_rates ORDER BY crop_name ASC');
     const rates = rows.map(formatRate);
     res.json({ success: true, rates });
@@ -121,48 +129,52 @@ router.post('/', authenticateToken, requireRole(['admin', 'staff']), async (req,
 });
 
 /**
- * Background Live Market Simulator
- * Nudges a random crop's price slightly every 20-30 seconds to simulate real-time mandi action
+ * Execute a single simulated price fluctuation tick
+ */
+async function tickMarketRate() {
+  try {
+    const allRates = await db.query('SELECT * FROM crop_rates');
+    if (!allRates || allRates.length === 0) return;
+
+    // Pick a random crop
+    const randomIndex = Math.floor(Math.random() * allRates.length);
+    const crop = allRates[randomIndex];
+
+    const currentPrice = Number(crop.price_per_quintal);
+    // Nudge between -1.5% and +1.8%
+    const pctNudge = (Math.random() * 3.3 - 1.5) / 100;
+    let newPrice = Math.round((currentPrice * (1 + pctNudge)) * 10) / 10;
+    if (newPrice <= 100) newPrice = 100;
+
+    if (newPrice === currentPrice) return;
+
+    await db.query(
+      'UPDATE crop_rates SET previous_price = ?, price_per_quintal = ?, updated_at = CURRENT_TIMESTAMP WHERE rate_id = ?',
+      [currentPrice, newPrice, crop.rate_id]
+    );
+
+    const updated = await db.get('SELECT * FROM crop_rates WHERE rate_id = ?', [crop.rate_id]);
+    const formatted = formatRate(updated);
+
+    broadcastRateUpdate(formatted);
+  } catch (simErr) {
+    // Ignore background simulator errors
+  }
+}
+
+/**
+ * Background Live Market Simulator (Continuous run for local dev & Railway)
  */
 let simulationTimer = null;
 
 function startMarketSimulator() {
   if (simulationTimer) return;
-
-  simulationTimer = setInterval(async () => {
-    try {
-      const allRates = await db.query('SELECT * FROM crop_rates');
-      if (!allRates || allRates.length === 0) return;
-
-      // Pick a random crop
-      const randomIndex = Math.floor(Math.random() * allRates.length);
-      const crop = allRates[randomIndex];
-
-      const currentPrice = Number(crop.price_per_quintal);
-      // Nudge between -1.5% and +1.8%
-      const pctNudge = (Math.random() * 3.3 - 1.5) / 100;
-      let newPrice = Math.round((currentPrice * (1 + pctNudge)) * 10) / 10;
-      if (newPrice <= 100) newPrice = 100;
-
-      if (newPrice === currentPrice) return;
-
-      await db.query(
-        'UPDATE crop_rates SET previous_price = ?, price_per_quintal = ?, updated_at = CURRENT_TIMESTAMP WHERE rate_id = ?',
-        [currentPrice, newPrice, crop.rate_id]
-      );
-
-      const updated = await db.get('SELECT * FROM crop_rates WHERE rate_id = ?', [crop.rate_id]);
-      const formatted = formatRate(updated);
-
-      broadcastRateUpdate(formatted);
-    } catch (simErr) {
-      // Ignore background simulator errors
-    }
-  }, 25000); // every 25 seconds
+  simulationTimer = setInterval(tickMarketRate, 25000);
 }
 
 module.exports = {
   router,
   startMarketSimulator,
-  formatRate
+  formatRate,
+  tickMarketRate
 };

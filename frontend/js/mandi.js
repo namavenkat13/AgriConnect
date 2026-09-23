@@ -73,17 +73,20 @@ document.addEventListener('DOMContentLoaded', async () => {
  */
 function setupHeader() {
   const staffNameEl = document.getElementById('staff-name-display');
-  if (staffNameEl) staffNameEl.textContent = currentStaff.full_name || 'Mandi Staff';
+  if (staffNameEl) staffNameEl.textContent = currentStaff.full_name || 'Staff';
 
   const centreNameEl = document.getElementById('header-centre-name');
   if (centreNameEl) centreNameEl.textContent = currentStaff.centre_name || 'Assigned APMC Centre';
 
+  const t = (k, f) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, f) : f);
   const roleContainer = document.getElementById('role-badge-container');
   if (roleContainer) {
     if (currentStaff.role === 'mandi_admin') {
-      roleContainer.innerHTML = `<span class="badge-role badge-role-admin">${MandiIcons.shield} <span>Mandi Admin</span></span>`;
+      const label = t('role_mandi_title', 'Mandi') + ' Admin';
+      roleContainer.innerHTML = `<span class="badge-role badge-role-admin">${MandiIcons.shield} <span>${label}</span></span>`;
     } else {
-      roleContainer.innerHTML = `<span class="badge-role badge-role-member">${MandiIcons.building} <span>Mandi Member</span></span>`;
+      const label = t('role_mandi_title', 'Mandi') + ' Member';
+      roleContainer.innerHTML = `<span class="badge-role badge-role-member">${MandiIcons.building} <span>${label}</span></span>`;
     }
   }
 }
@@ -267,26 +270,29 @@ function selectSlot(slot) {
   bookings.forEach((b) => {
     const tr = document.createElement('tr');
 
+    const t = (k, f) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, f) : f);
+    const tStat = (s) => (window.AgriLang && typeof window.AgriLang.tStatus === 'function' ? window.AgriLang.tStatus(s) : (s || '').replace('_', ' '));
+
     const isOffline = b.channel === 'offline';
     const channelBadge = isOffline
-      ? `<span class="badge-channel badge-channel-offline">${MandiIcons.userWalk} <span>Walk-in</span></span>`
-      : `<span class="badge-channel badge-channel-online">${MandiIcons.globe} <span>Online</span></span>`;
+      ? `<span class="badge-channel badge-channel-offline">${MandiIcons.userWalk} <span>${t('channel_offline', 'Walk-in')}</span></span>`
+      : `<span class="badge-channel badge-channel-online">${MandiIcons.globe} <span>${t('channel_online', 'Online')}</span></span>`;
 
-    let approvalBadge = '<span class="badge badge-status-complete">Approved</span>';
+    let approvalBadge = `<span class="badge badge-status-complete">${t('status_approved', 'Approved')}</span>`;
     if (b.approval_status === 'pending') {
-      approvalBadge = '<span class="badge badge-status-pending">Pending</span>';
+      approvalBadge = `<span class="badge badge-status-pending">${t('status_pending', 'Pending')}</span>`;
     } else if (b.approval_status === 'rejected') {
-      approvalBadge = '<span class="badge badge-cancelled">Rejected</span>';
+      approvalBadge = `<span class="badge badge-cancelled">${t('status_rejected', 'Rejected')}</span>`;
     }
 
-    let procBadge = `<span class="badge badge-${b.procurement_status}">${b.procurement_status}</span>`;
-    let payBadge = `<span class="badge badge-${b.payment_status}">${b.payment_status}</span>`;
+    let procBadge = `<span class="badge badge-${b.procurement_status}">${tStat(b.procurement_status)}</span>`;
+    let payBadge = `<span class="badge badge-${b.payment_status}">${tStat(b.payment_status)}</span>`;
 
     let actionsHtml = '';
     if (b.booking_status === 'completed' || b.procurement_status === 'accepted') {
       actionsHtml = `
         <button class="btn btn-secondary btn-sm" onclick="viewBookingReceipt(${b.booking_id})" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-          ${MandiIcons.fileText} <span>Receipt</span>
+          ${MandiIcons.fileText} <span>${t('btn_receipt', 'Receipt')}</span>
         </button>
       `;
     } else if (b.booking_status !== 'cancelled') {
@@ -305,13 +311,13 @@ function selectSlot(slot) {
         `;
       }
     } else {
-      actionsHtml = '<span style="color: var(--icon-muted); font-size: 0.8rem;">Cancelled</span>';
+      actionsHtml = `<span style="color: var(--icon-muted); font-size: 0.8rem;">${t('status_cancelled', 'Cancelled')}</span>`;
     }
 
     // Call Now button: triggers immediate Sarvam outbound call for this farmer
     const callBtnHtml = `
       <button type="button" class="btn btn-secondary btn-sm" onclick="triggerCallNow(${b.booking_id}, this)" title="Call Now" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-        ${MandiIcons.phone} <span>Call Now</span>
+        ${MandiIcons.phone} <span>${t('btn_call_now', 'Call Now')}</span>
       </button>
     `;
 
@@ -322,7 +328,7 @@ function selectSlot(slot) {
         <div style="font-size: 0.8rem; color: var(--text-muted);">${b.farmer_phone} ${b.village ? `• ${b.village}` : ''}</div>
       </td>
       <td>
-        ${b.crop_name}
+        <strong data-crop-raw="${b.crop_name}">${(window.AgriLang && typeof window.AgriLang.tCrop === 'function') ? window.AgriLang.tCrop(b.crop_name) : b.crop_name}</strong>
         <div style="font-size: 0.8rem; color: var(--text-muted);">${b.estimated_quantity_kg} kg est.</div>
       </td>
       <td>${channelBadge}</td>
@@ -1195,6 +1201,14 @@ document.addEventListener('click', (e) => {
       e.target.classList.remove('active');
       syncModalBodyLock();
     }
+  }
+});
+
+// Re-render mandi desk elements when language changes
+window.addEventListener('languageChanged', () => {
+  setupHeader();
+  if (selectedSlot) {
+    renderSlotBookings(selectedSlot);
   }
 });
 

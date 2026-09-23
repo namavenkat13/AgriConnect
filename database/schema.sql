@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     full_name VARCHAR(100) NOT NULL,
     phone_number VARCHAR(15) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    password_hint VARCHAR(255),
     role ENUM('farmer', 'staff', 'admin') DEFAULT 'farmer',
     village VARCHAR(100),
     id_proof_number VARCHAR(50),
@@ -50,6 +51,7 @@ CREATE TABLE IF NOT EXISTS centre_staff (
     name VARCHAR(100) NOT NULL,
     phone VARCHAR(15) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    password_hint VARCHAR(255),
     role ENUM('mandi_admin','mandi_member') DEFAULT 'mandi_member',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (centre_id) REFERENCES procurement_centres(centre_id)

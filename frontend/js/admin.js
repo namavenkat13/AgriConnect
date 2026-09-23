@@ -27,14 +27,59 @@ async function initAdminDashboard() {
     });
   }
 
-  // Setup Socket.IO for live queue reflection
+  // Setup dual-mode real-time queue reflection (WebSocket + ~7s smart polling fallback)
+  let adminQueuePollTimer = null;
+
+  function startAdminPolling() {
+    if (adminQueuePollTimer) return;
+    adminQueuePollTimer = setInterval(() => {
+      loadTodayQueue();
+    }, 7000);
+  }
+
+  function stopAdminPolling() {
+    if (adminQueuePollTimer) {
+      clearInterval(adminQueuePollTimer);
+      adminQueuePollTimer = null;
+    }
+  }
+
   if (typeof io !== 'undefined') {
-    const socket = io();
-    socket.on('queue_update', (data) => {
-      if (Number(data.centre_id) === Number(selectedCentreId)) {
-        loadTodayQueue();
-      }
-    });
+    try {
+      const socket = io({
+        timeout: 4000,
+        reconnectionAttempts: 3,
+        transports: ['websocket', 'polling']
+      });
+
+      socket.on('connect', () => {
+        stopAdminPolling();
+      });
+
+      socket.on('connect_error', () => {
+        startAdminPolling();
+      });
+
+      socket.on('disconnect', () => {
+        startAdminPolling();
+      });
+
+      socket.on('queue_update', (data) => {
+        if (Number(data.centre_id) === Number(selectedCentreId)) {
+          loadTodayQueue();
+        }
+      });
+
+      setTimeout(() => {
+        if (!socket || !socket.connected) {
+          startAdminPolling();
+        }
+      }, 3500);
+    } catch (sockErr) {
+      startAdminPolling();
+    }
+  } else {
+    startAdminPolling();
   }
 
   // Load centres dropdown
@@ -172,6 +217,9 @@ async function loadTodayQueue() {
       return;
     }
 
+    const t = (k, f) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, f) : f);
+    const tStat = (s) => (window.AgriLang && typeof window.AgriLang.tStatus === 'function' ? window.AgriLang.tStatus(s) : (s || '').replace('_', ' '));
+
     queueTableBody.innerHTML = currentBookings.map(b => {
       const isCurrentlyServing = Number(b.queue_number) === nowServing;
       const isPast = Number(b.queue_number) < nowServing;
@@ -186,7 +234,7 @@ async function loadTodayQueue() {
             <span style="font-family: var(--font-mono); font-weight: 800; font-size: 1.1rem; color: ${isCurrentlyServing ? 'var(--primary-dark)' : 'var(--text-main)'};">
               #${b.queue_number}
             </span>
-            ${isCurrentlyServing ? '<span class="badge badge-in_queue" style="display:block; margin-top:2px;">SERVING</span>' : ''}
+            ${isCurrentlyServing ? `<span class="badge badge-in_queue" style="display:block; margin-top:2px;">${t('status_in_queue', 'SERVING')}</span>` : ''}
           </td>
           <td>
             <strong>${b.farmer_name}</strong><br>
@@ -194,15 +242,15 @@ async function loadTodayQueue() {
           </td>
           <td style="font-family: var(--font-mono);">${b.farmer_phone}</td>
           <td>
-            <strong>${AgriTicker.getCropIcon(b.crop_name)} ${b.crop_name}</strong><br>
+            <strong>${AgriTicker.getCropIcon(b.crop_name)} <span data-crop-raw="${b.crop_name}">${(window.AgriLang && typeof window.AgriLang.tCrop === 'function') ? window.AgriLang.tCrop(b.crop_name) : b.crop_name}</span></strong><br>
             <span style="font-size: 0.75rem; color: var(--text-muted);">${finalQtyDisplay}</span>
           </td>
-          <td><span class="badge badge-${b.booking_status}">${b.booking_status.replace('_', ' ')}</span></td>
-          <td><span class="badge badge-${b.procurement_status}">${b.procurement_status}</span></td>
-          <td><span class="badge badge-${b.payment_status}">${b.payment_status}</span></td>
+          <td><span class="badge badge-${b.booking_status}">${tStat(b.booking_status)}</span></td>
+          <td><span class="badge badge-${b.procurement_status}">${tStat(b.procurement_status)}</span></td>
+          <td><span class="badge badge-${b.payment_status}">${tStat(b.payment_status)}</span></td>
           <td>
             <button class="btn btn-secondary" style="padding: 0.35rem 0.7rem; font-size: 0.8rem;" onclick="openStatusModal(${b.booking_id})">
-              ✏️ Update
+              ✏️ ${t('th_update_price', 'Update')}
             </button>
           </td>
         </tr>
@@ -212,6 +260,13 @@ async function loadTodayQueue() {
     console.error('Error loading today queue:', err);
   }
 }
+
+// Re-render admin queue when language changes
+window.addEventListener('languageChanged', () => {
+  if (document.getElementById('admin-queue-body')) {
+    loadTodayQueue();
+  }
+});
 
 /**
  * Handle Call Next Farmer action
@@ -355,7 +410,7 @@ async function loadRatesManagement() {
     ratesTableBody.innerHTML = data.rates.map(r => `
       <tr>
         <td>
-          <strong>${AgriTicker.getCropIcon(r.crop_name)} ${r.crop_name}</strong>
+          <strong>${AgriTicker.getCropIcon(r.crop_name)} <span data-crop-raw="${r.crop_name}">${(window.AgriLang && typeof window.AgriLang.tCrop === 'function') ? window.AgriLang.tCrop(r.crop_name) : r.crop_name}</span></strong>
         </td>
         <td style="font-family: var(--font-mono); font-weight: 700;">
           ₹${r.price_per_quintal.toFixed(2)}

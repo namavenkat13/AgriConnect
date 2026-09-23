@@ -6,6 +6,7 @@
   <title>Farmer Dashboard - AgriConnect</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="js/theme.js"></script>
+  <script src="js/i18n.js?v=3.2"></script>
   <script src="js/ist-clock.js"></script>
 </head>
 <body>
@@ -17,8 +18,8 @@
         <a href="/dashboard.html" style="text-decoration: none; display: flex; align-items: center; gap: 0.75rem;">
           <div class="logo-icon">🌾</div>
           <div>
-            <span class="brand-title">AgriConnect</span>
-            <div class="brand-tagline">Farmer Procurement Portal</div>
+            <span class="brand-title" data-i18n="brand_title">AgriConnect</span>
+            <div class="brand-tagline" data-i18n="brand_farmer_portal">Farmer Procurement Portal</div>
           </div>
         </a>
         <div class="header-live-clock" title="Live India Standard Time (Asia/Kolkata)">
@@ -29,9 +30,17 @@
       </div>
 
       <div class="header-nav">
+        <!-- Compact 3-Position Sliding Language Switch -->
+        <div class="lang-switch-wrapper" data-active-lang="en" role="group" aria-label="Language selection">
+          <div class="lang-switch-slider"></div>
+          <button type="button" class="lang-btn" data-lang="en" onclick="AgriLang.setLanguage('en')" aria-label="English">E</button>
+          <button type="button" class="lang-btn" data-lang="te" onclick="AgriLang.setLanguage('te')" aria-label="Telugu">త</button>
+          <button type="button" class="lang-btn" data-lang="hi" onclick="AgriLang.setLanguage('hi')" aria-label="Hindi">ह</button>
+        </div>
+
         <!-- Sun/Moon Theme Toggle -->
         <button class="theme-toggle-btn" onclick="AgriTheme.toggleTheme()" aria-label="Toggle theme">
-          <span class="btn-icon">🌙</span> <span>Dark Mode</span>
+          <span class="btn-icon">🌙</span> <span data-i18n="theme_dark">Dark Mode</span>
         </button>
 
         <!-- In-App Notification Bell -->
@@ -48,7 +57,7 @@
           </div>
           <ul class="notification-list" id="notif-list">
             <li style="padding: 1.5rem; text-align: center; color: var(--text-muted);">
-              Loading alerts...
+              <span data-i18n="nav_loading_alerts">Loading alerts...</span>
             </li>
           </ul>
         </div>
@@ -59,14 +68,15 @@
         </div>
 
         <button class="btn btn-secondary" onclick="AgriAuth.logout()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
-          Logout
+          <span data-i18n="nav_logout">Logout</span>
         </button>
       </div>
     </div>
   </header>
 
   <!-- Persistent Stock-Market Mandi Ticker Strip (Highlights Farmer's Crops) -->
-  <div class="ticker-strip-wrapper">
+  <div class="ticker-strip-wrapper" data-ticker-label="🔴 LIVE MANDI">
+    <span class="ticker-badge" id="ticker-badge" data-i18n="ticker_live_mandi">🔴 LIVE MANDI</span>
     <div class="ticker-track" id="ticker-track">
       <!-- Injected dynamically by ticker.js -->
     </div>
@@ -87,100 +97,100 @@
       <section class="card">
         <div class="card-header">
           <h2 class="card-title">
-            <span class="title-icon">📅</span> <span>Book a Procurement Slot</span>
+            <span class="title-icon">📅</span> <span data-i18n="card_book_slot">Book a Procurement Slot</span>
           </h2>
-          <span style="font-size: 0.8rem; color: var(--text-muted);">Instant Token Confirmation</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="sub_instant_token">Instant Token Confirmation</span>
         </div>
 
         <form id="booking-form">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
             <div class="form-group">
-              <label class="form-label" for="state-select">Select State</label>
+              <label class="form-label" for="state-select" data-i18n="label_select_state">Select State</label>
               <select id="state-select" class="form-select">
-                <option value="">All States (Pan-India)</option>
+                <option value="" data-i18n="mandi_all_states">All States (Pan-India)</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="city-filter">Filter City</label>
-              <input type="text" id="city-filter" class="form-input" placeholder="Type city (e.g. Pune, Jaipur)...">
+              <label class="form-label" for="city-filter" data-i18n="label_filter_city">Filter City</label>
+              <input type="text" id="city-filter" class="form-input" placeholder="Type city (e.g. Pune, Jaipur)..." data-i18n-placeholder="placeholder_filter_city">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="centre-select">Procurement Centre (APMC / Mandi)</label>
+            <label class="form-label" for="centre-select" data-i18n="label_centre_select">Procurement Centre (APMC / Mandi)</label>
             <select id="centre-select" class="form-select" required>
-              <option value="">Loading centres...</option>
+              <option value="" data-i18n="option_loading_centres">Loading centres...</option>
             </select>
             <div class="form-help" id="centre-details-hint" style="color: var(--primary-green); font-weight: 500;"></div>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="date-input">Appointment Date</label>
+            <label class="form-label" for="date-input" data-i18n="label_appt_date">Appointment Date</label>
             <input type="date" id="date-input" class="form-input" required>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Select Hourly Arrival Slot</label>
+            <label class="form-label" data-i18n="label_select_slot">Select Hourly Arrival Slot</label>
             <div class="slot-grid" id="slot-grid">
               <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 1rem;">
-                Select a centre to view slots.
+                <span data-i18n="slots_select_centre_first">Select a centre to view slots.</span>
               </div>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="crop-select">Crop to Sell</label>
+            <label class="form-label" for="crop-select" data-i18n="label_crop_to_sell">Crop to Sell</label>
             <select id="crop-select" class="form-select" required>
-              <option value="">-- Choose Crop to Sell (30 Crops Available) --</option>
-              <optgroup label="🌾 Cereals &amp; Grains">
-                <option value="Wheat (Sharbati)">🌾 Wheat (Sharbati) — ₹2,450/q</option>
-                <option value="Paddy (Basmati)">🍚 Paddy (Basmati) — ₹3,850/q</option>
-                <option value="Maize (Kharif)">🌽 Maize (Kharif) — ₹2,150/q</option>
-                <option value="Barley (Jau)">🌾 Barley (Jau) — ₹1,950/q</option>
-                <option value="Jowar (Sorghum)">🌾 Jowar (Sorghum) — ₹3,200/q</option>
-                <option value="Bajra (Pearl Millet)">🌾 Bajra (Pearl Millet) — ₹2,550/q</option>
+              <option value="" data-i18n="choose_crop_placeholder">-- Choose Crop to Sell (30 Crops Available) --</option>
+              <optgroup label="🌾 Cereals &amp; Grains" data-i18n-optgroup="crop_cat_cereals">
+                <option value="Wheat (Sharbati)" data-crop-raw="Wheat (Sharbati)" data-crop-icon="🌾" data-crop-price="— ₹2,450/q">🌾 Wheat (Sharbati) — ₹2,450/q</option>
+                <option value="Paddy (Basmati)" data-crop-raw="Paddy (Basmati)" data-crop-icon="🍚" data-crop-price="— ₹3,850/q">🍚 Paddy (Basmati) — ₹3,850/q</option>
+                <option value="Maize (Kharif)" data-crop-raw="Maize (Kharif)" data-crop-icon="🌽" data-crop-price="— ₹2,150/q">🌽 Maize (Kharif) — ₹2,150/q</option>
+                <option value="Barley (Jau)" data-crop-raw="Barley (Jau)" data-crop-icon="🌾" data-crop-price="— ₹1,950/q">🌾 Barley (Jau) — ₹1,950/q</option>
+                <option value="Jowar (Sorghum)" data-crop-raw="Jowar (Sorghum)" data-crop-icon="🌾" data-crop-price="— ₹3,200/q">🌾 Jowar (Sorghum) — ₹3,200/q</option>
+                <option value="Bajra (Pearl Millet)" data-crop-raw="Bajra (Pearl Millet)" data-crop-icon="🌾" data-crop-price="— ₹2,550/q">🌾 Bajra (Pearl Millet) — ₹2,550/q</option>
               </optgroup>
-              <optgroup label="🌿 Pulses &amp; Legumes">
-                <option value="Green Gram (Moong)">🌿 Green Gram (Moong) — ₹8,550/q</option>
-                <option value="Gram (Chana / Chickpea)">🧆 Gram (Chana / Chickpea) — ₹5,600/q</option>
-                <option value="Tur Dal (Arhar / Pigeon Pea)">🥣 Tur Dal (Arhar / Pigeon Pea) — ₹7,400/q</option>
+              <optgroup label="🌿 Pulses &amp; Legumes" data-i18n-optgroup="crop_cat_pulses">
+                <option value="Green Gram (Moong)" data-crop-raw="Green Gram (Moong)" data-crop-icon="🌿" data-crop-price="— ₹8,550/q">🌿 Green Gram (Moong) — ₹8,550/q</option>
+                <option value="Gram (Chana / Chickpea)" data-crop-raw="Gram (Chana / Chickpea)" data-crop-icon="🧆" data-crop-price="— ₹5,600/q">🧆 Gram (Chana / Chickpea) — ₹5,600/q</option>
+                <option value="Tur Dal (Arhar / Pigeon Pea)" data-crop-raw="Tur Dal (Arhar / Pigeon Pea)" data-crop-icon="🥣" data-crop-price="— ₹7,400/q">🥣 Tur Dal (Arhar / Pigeon Pea) — ₹7,400/q</option>
               </optgroup>
-              <optgroup label="🌱 Oilseeds">
-                <option value="Soybean (Yellow)">🌱 Soybean (Yellow) — ₹4,680/q</option>
-                <option value="Mustard (Black)">🌼 Mustard (Black) — ₹5,450/q</option>
-                <option value="Groundnut (Peanut)">🥜 Groundnut (Peanut) — ₹6,450/q</option>
+              <optgroup label="🌱 Oilseeds" data-i18n-optgroup="crop_cat_oilseeds">
+                <option value="Soybean (Yellow)" data-crop-raw="Soybean (Yellow)" data-crop-icon="🌱" data-crop-price="— ₹4,680/q">🌱 Soybean (Yellow) — ₹4,680/q</option>
+                <option value="Mustard (Black)" data-crop-raw="Mustard (Black)" data-crop-icon="🌼" data-crop-price="— ₹5,450/q">🌼 Mustard (Black) — ₹5,450/q</option>
+                <option value="Groundnut (Peanut)" data-crop-raw="Groundnut (Peanut)" data-crop-icon="🥜" data-crop-price="— ₹6,450/q">🥜 Groundnut (Peanut) — ₹6,450/q</option>
               </optgroup>
-              <optgroup label="🎋 Cash Crops &amp; Commercial Fibres">
-                <option value="Cotton (Medium Staple)">☁️ Cotton (Medium Staple) — ₹7,120/q</option>
-                <option value="Sugarcane">🎋 Sugarcane — ₹350/q</option>
-                <option value="Jute (Raw Jute)">🧶 Jute (Raw Jute) — ₹5,050/q</option>
-                <option value="Tea (Assam Green Leaf)">🍵 Tea (Assam Green Leaf) — ₹4,200/q</option>
-                <option value="Arecanut (Supari)">🌰 Arecanut (Supari) — ₹38,000/q</option>
-                <option value="Coffee (Arabica / Robusta)">☕ Coffee (Arabica / Robusta) — ₹22,000/q</option>
+              <optgroup label="🎋 Cash Crops &amp; Commercial Fibres" data-i18n-optgroup="crop_cat_cash">
+                <option value="Cotton (Medium Staple)" data-crop-raw="Cotton (Medium Staple)" data-crop-icon="☁️" data-crop-price="— ₹7,120/q">☁️ Cotton (Medium Staple) — ₹7,120/q</option>
+                <option value="Sugarcane" data-crop-raw="Sugarcane" data-crop-icon="🎋" data-crop-price="— ₹350/q">🎋 Sugarcane — ₹350/q</option>
+                <option value="Jute (Raw Jute)" data-crop-raw="Jute (Raw Jute)" data-crop-icon="🧶" data-crop-price="— ₹5,050/q">🧶 Jute (Raw Jute) — ₹5,050/q</option>
+                <option value="Tea (Assam Green Leaf)" data-crop-raw="Tea (Assam Green Leaf)" data-crop-icon="🍵" data-crop-price="— ₹4,200/q">🍵 Tea (Assam Green Leaf) — ₹4,200/q</option>
+                <option value="Arecanut (Supari)" data-crop-raw="Arecanut (Supari)" data-crop-icon="🌰" data-crop-price="— ₹38,000/q">🌰 Arecanut (Supari) — ₹38,000/q</option>
+                <option value="Coffee (Arabica / Robusta)" data-crop-raw="Coffee (Arabica / Robusta)" data-crop-icon="☕" data-crop-price="— ₹22,000/q">☕ Coffee (Arabica / Robusta) — ₹22,000/q</option>
               </optgroup>
-              <optgroup label="🍅 Vegetables &amp; Fruits">
-                <option value="Tomato (Hybrid)">🍅 Tomato (Hybrid) — ₹1,850/q</option>
-                <option value="Onion (Red Nashik)">🧅 Onion (Red Nashik) — ₹2,200/q</option>
-                <option value="Potato (Jyoti)">🥔 Potato (Jyoti) — ₹1,650/q</option>
-                <option value="Banana (Robusta)">🍌 Banana (Robusta) — ₹2,100/q</option>
-                <option value="Apple (Royal Delicious)">🍎 Apple (Royal Delicious) — ₹7,800/q</option>
-                <option value="Mango (Alphonso / Kesar)">🥭 Mango (Alphonso / Kesar) — ₹6,500/q</option>
-                <option value="Garlic (Lahsun)">🧄 Garlic (Lahsun) — ₹11,500/q</option>
-                <option value="Ginger (Adrak)">🫚 Ginger (Adrak) — ₹8,200/q</option>
-                <option value="Litchi (Shahi)">🍒 Litchi (Shahi) — ₹4,800/q</option>
+              <optgroup label="🍅 Vegetables &amp; Fruits" data-i18n-optgroup="crop_cat_veg_fruits">
+                <option value="Tomato (Hybrid)" data-crop-raw="Tomato (Hybrid)" data-crop-icon="🍅" data-crop-price="— ₹1,850/q">🍅 Tomato (Hybrid) — ₹1,850/q</option>
+                <option value="Onion (Red Nashik)" data-crop-raw="Onion (Red Nashik)" data-crop-icon="🧅" data-crop-price="— ₹2,200/q">🧅 Onion (Red Nashik) — ₹2,200/q</option>
+                <option value="Potato (Jyoti)" data-crop-raw="Potato (Jyoti)" data-crop-icon="🥔" data-crop-price="— ₹1,650/q">🥔 Potato (Jyoti) — ₹1,650/q</option>
+                <option value="Banana (Robusta)" data-crop-raw="Banana (Robusta)" data-crop-icon="🍌" data-crop-price="— ₹2,100/q">🍌 Banana (Robusta) — ₹2,100/q</option>
+                <option value="Apple (Royal Delicious)" data-crop-raw="Apple (Royal Delicious)" data-crop-icon="🍎" data-crop-price="— ₹7,800/q">🍎 Apple (Royal Delicious) — ₹7,800/q</option>
+                <option value="Mango (Alphonso / Kesar)" data-crop-raw="Mango (Alphonso / Kesar)" data-crop-icon="🥭" data-crop-price="— ₹6,500/q">🥭 Mango (Alphonso / Kesar) — ₹6,500/q</option>
+                <option value="Garlic (Lahsun)" data-crop-raw="Garlic (Lahsun)" data-crop-icon="🧄" data-crop-price="— ₹11,500/q">🧄 Garlic (Lahsun) — ₹11,500/q</option>
+                <option value="Ginger (Adrak)" data-crop-raw="Ginger (Adrak)" data-crop-icon="🫚" data-crop-price="— ₹8,200/q">🫚 Ginger (Adrak) — ₹8,200/q</option>
+                <option value="Litchi (Shahi)" data-crop-raw="Litchi (Shahi)" data-crop-icon="🍒" data-crop-price="— ₹4,800/q">🍒 Litchi (Shahi) — ₹4,800/q</option>
               </optgroup>
-              <optgroup label="🧂 Spices &amp; Condiments">
-                <option value="Red Chilli (Guntur)">🌶️ Red Chilli (Guntur) — ₹18,500/q</option>
-                <option value="Turmeric (Haldi)">🟡 Turmeric (Haldi) — ₹13,800/q</option>
-                <option value="Cumin Seeds (Jeera)">🧂 Cumin Seeds (Jeera) — ₹28,500/q</option>
+              <optgroup label="🧂 Spices &amp; Condiments" data-i18n-optgroup="crop_cat_spices">
+                <option value="Red Chilli (Guntur)" data-crop-raw="Red Chilli (Guntur)" data-crop-icon="🌶️" data-crop-price="— ₹18,500/q">🌶️ Red Chilli (Guntur) — ₹18,500/q</option>
+                <option value="Turmeric (Haldi)" data-crop-raw="Turmeric (Haldi)" data-crop-icon="🟡" data-crop-price="— ₹13,800/q">🟡 Turmeric (Haldi) — ₹13,800/q</option>
+                <option value="Cumin Seeds (Jeera)" data-crop-raw="Cumin Seeds (Jeera)" data-crop-icon="🧂" data-crop-price="— ₹28,500/q">🧂 Cumin Seeds (Jeera) — ₹28,500/q</option>
               </optgroup>
             </select>
             <div class="form-help">Your registered crops are highlighted at the top.</div>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="quantity-input">Estimated Harvest Quantity (in Kilograms)</label>
-            <input type="number" id="quantity-input" class="form-input" placeholder="e.g. 500" min="10" step="5" required>
+            <label class="form-label" for="quantity-input" data-i18n="label_quantity_est">Estimated Harvest Quantity (in Kilograms)</label>
+            <input type="number" id="quantity-input" class="form-input" placeholder="e.g. 500" data-i18n-placeholder="placeholder_qty" min="10" step="5" required>
             <div class="form-help">Final price is weighed & calculated at the mandi counter.</div>
           </div>
 
@@ -196,27 +206,27 @@
         <div class="card">
           <div class="card-header">
             <h3 class="card-title" style="font-size: 1.1rem;">
-              <span class="title-icon">🌾</span> <span>My Registered Crops</span>
+              <span class="title-icon">🌾</span> <span data-i18n="card_my_crops">My Registered Crops</span>
             </h3>
           </div>
           <div id="my-crops-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
             <!-- Injected by script -->
           </div>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">
+          <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="text_crops_highlighted">
             Rates for your registered crops are automatically highlighted in the live mandi ticker above.
           </p>
         </div>
 
         <div class="card" style="background: var(--bg-card-alt); border-color: var(--border-color);">
           <h3 class="card-title" style="font-size: 1.05rem; margin-bottom: 0.75rem;">
-            <span class="title-icon">ℹ️</span> <span>How AgriConnect Queue Works</span>
+            <span class="title-icon">ℹ️</span> <span data-i18n="card_how_it_works">How AgriConnect Queue Works</span>
           </h3>
           <ol style="font-size: 0.85rem; color: var(--text-muted); padding-left: 1.25rem; line-height: 1.6;">
-            <li>Book your slot before loading your vehicle.</li>
-            <li>Monitor your queue position and live estimated wait time right here.</li>
-            <li>You will receive automated notifications when it is your turn to be served.</li>
-            <li>Arrive at the counter, get your harvest weighed and graded transparently.</li>
-            <li>Payment status updates directly to your dashboard upon processing.</li>
+            <li data-i18n="step_1">Book your slot before loading your vehicle.</li>
+            <li data-i18n="step_2">Monitor your queue position and live estimated wait time right here.</li>
+            <li data-i18n="step_3">You will receive automated notifications when it is your turn to be served.</li>
+            <li data-i18n="step_4">Arrive at the counter, get your harvest weighed and graded transparently.</li>
+            <li data-i18n="step_5">Payment status updates directly to your dashboard upon processing.</li>
           </ol>
         </div>
 
@@ -228,30 +238,30 @@
     <section class="card" style="margin-top: 1.5rem;">
       <div class="card-header">
         <h2 class="card-title">
-          <span class="title-icon">📋</span> <span>My Procurement Bookings</span>
+          <span class="title-icon">📋</span> <span data-i18n="card_my_bookings">My Procurement Bookings</span>
         </h2>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">Live status from booked to paid</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="sub_live_status">Live status from booked to paid</span>
       </div>
 
       <div class="table-responsive">
         <table class="data-table">
           <thead>
             <tr>
-              <th>Date & Time</th>
-              <th>Centre</th>
-              <th>Crop & Token</th>
-              <th>Quantity</th>
-              <th>Booking Status</th>
-              <th>Procurement</th>
-              <th>Payment</th>
-              <th>Final Amount</th>
-              <th>Action / Receipt</th>
+              <th data-i18n="th_date_time">Date & Time</th>
+              <th data-i18n="th_centre">Centre</th>
+              <th data-i18n="th_crop_token">Crop & Token</th>
+              <th data-i18n="th_quantity">Quantity</th>
+              <th data-i18n="th_booking_status">Booking Status</th>
+              <th data-i18n="th_procurement">Procurement</th>
+              <th data-i18n="th_payment">Payment</th>
+              <th data-i18n="th_final_amount">Final Amount</th>
+              <th data-i18n="th_action_receipt">Action / Receipt</th>
             </tr>
           </thead>
           <tbody id="my-bookings-body">
             <tr>
               <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">
-                Loading your bookings...
+                <span data-i18n="loading_bookings">Loading your bookings...</span>
               </td>
             </tr>
           </tbody>
@@ -265,11 +275,11 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div>
-        <strong>AgriConnect</strong> — Farmer Dashboard.<br>
-        <span style="font-size: 0.75rem;">Need support with your slot or queue token? Contact mandi support.</span>
+        <strong data-i18n="brand_title">AgriConnect</strong> — <span data-i18n="footer_farmer_dashboard">Farmer Dashboard.</span><br>
+        <span style="font-size: 0.75rem;" data-i18n="footer_need_support">Need support with your slot or queue token? Contact mandi support.</span>
       </div>
       <div>
-        <a href="/index.html#mandi-rates">Live Mandi Rates</a>
+        <a href="/index.html#mandi-rates" data-i18n="nav_mandi_rates">Live Mandi Rates</a>
       </div>
     </div>
   </footer>
@@ -280,7 +290,7 @@
   <!-- Client Scripts -->
   <script src="js/auth.js"></script>
   <script src="js/receipt.js"></script>
-  <script src="js/ticker.js"></script>
+  <script src="js/ticker.js?v=3.2"></script>
   <script src="js/booking.js"></script>
   <script src="js/queue.js"></script>
 
@@ -297,14 +307,21 @@
       }
 
       // Render registered crops badges
-      const myCropsContainer = document.getElementById('my-crops-list');
-      if (myCropsContainer && user && Array.isArray(user.crops)) {
-        myCropsContainer.innerHTML = user.crops.map(c => `
-          <span class="my-crop-pill" style="background: var(--primary-subtle); color: var(--primary-dark); font-weight: 600; font-size: 0.82rem; padding: 0.35rem 0.75rem; border-radius: var(--radius-full); border: 1.5px solid rgba(46,125,50,0.25); display: inline-flex; align-items: center; gap: 0.4rem;">
-            <span class="crop-icon">${AgriTicker.getCropIcon(c)}</span> <span>${c}</span>
-          </span>
-        `).join('');
+      function renderMyCropsBadges() {
+        const myCropsContainer = document.getElementById('my-crops-list');
+        if (myCropsContainer && user && Array.isArray(user.crops)) {
+          myCropsContainer.innerHTML = user.crops.map(c => {
+            const cropDisplay = (window.AgriLang && typeof window.AgriLang.tCrop === 'function') ? window.AgriLang.tCrop(c) : c;
+            return `
+              <span class="my-crop-pill" style="background: var(--primary-subtle); color: var(--primary-dark); font-weight: 600; font-size: 0.82rem; padding: 0.35rem 0.75rem; border-radius: var(--radius-full); border: 1.5px solid rgba(46,125,50,0.25); display: inline-flex; align-items: center; gap: 0.4rem;">
+                <span class="crop-icon">${AgriTicker.getCropIcon(c)}</span> <span data-crop-raw="${c}">${cropDisplay}</span>
+              </span>
+            `;
+          }).join('');
+        }
       }
+      renderMyCropsBadges();
+      window.addEventListener('languageChanged', renderMyCropsBadges);
 
       document.addEventListener('DOMContentLoaded', async () => {
         // Initialize ticker with farmer's crops highlighted

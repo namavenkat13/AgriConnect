@@ -139,7 +139,9 @@ async function startServer() {
     await db.init();
     
     // Start background market ticker simulator (auto price fluctuation)
-    startMarketSimulator();
+    if (process.env.VERCEL !== '1') {
+      startMarketSimulator();
+    }
 
     server.listen(PORT, () => {
       console.log(`\n🌾 ===================================================`);
@@ -156,4 +158,10 @@ async function startServer() {
   }
 }
 
-startServer();
+// Automatically start server for local development and continuous hosts (e.g. Railway),
+// but permit clean serverless import on Vercel
+if (process.env.VERCEL !== '1') {
+  startServer();
+}
+
+module.exports = { app, server, startServer };

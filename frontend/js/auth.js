@@ -212,6 +212,27 @@ function validateAadhaarNumber(aadhaar, required = true) {
   return { valid: true, cleanAadhaar: clean };
 }
 
+/**
+ * Request Password Hint for an account by phone number
+ * Returns { success, has_hint, hint, message }
+ */
+async function requestPasswordHint(phoneNumber, role = null) {
+  try {
+    const res = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone_number: phoneNumber, role })
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Request password hint error:', err);
+    return {
+      success: false,
+      message: 'Network error connecting to AgriConnect server.'
+    };
+  }
+}
+
 window.AgriAuth = {
   getAuthToken,
   getStoredUser,
@@ -223,7 +244,9 @@ window.AgriAuth = {
   showToast,
   togglePasswordVisibility,
   validatePhoneNumber,
-  validateAadhaarNumber
+  validateAadhaarNumber,
+  requestPasswordHint
 };
+
 
 

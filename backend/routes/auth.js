@@ -65,10 +65,14 @@ function requireRole(allowedRoles) {
  */
 router.post('/register', async (req, res) => {
   try {
-    const { full_name, phone_number, password, village, id_proof_number, crops } = req.body;
+    const { full_name, phone_number, password, village, id_proof_number, crops, password_hint } = req.body;
 
     if (!full_name || !phone_number || !password) {
       return res.status(400).json({ success: false, message: 'Full name, phone number, and password are required.' });
+    }
+
+    if (String(password).length < 6) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long.' });
     }
 
     // Validate phone number: legitimate 10 digits starting with 6-9, disallowing dummy numbers
@@ -91,12 +95,24 @@ router.post('/register', async (req, res) => {
       return res.status(409).json({ success: false, message: 'A user is already registered with this phone number.' });
     }
 
+    // Process optional password hint
+    let cleanHint = null;
+    if (password_hint && typeof password_hint === 'string' && password_hint.trim()) {
+      cleanHint = password_hint.trim();
+      if (cleanHint.toLowerCase() === String(password).trim().toLowerCase()) {
+        return res.status(400).json({ success: false, message: 'Password hint cannot be identical to your password.' });
+      }
+      if (cleanHint.length > 150) {
+        cleanHint = cleanHint.substring(0, 150);
+      }
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
     const userRole = 'farmer';
 
     const insertResult = await db.query(
-      'INSERT INTO users (full_name, phone_number, password_hash, role, village, id_proof_number, created_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',
-      [full_name.trim(), cleanPhone, passwordHash, userRole, village ? village.trim() : null, cleanAadhaar]
+      'INSERT INTO users (full_name, phone_number, password_hash, password_hint, role, village, id_proof_number, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',
+      [full_name.trim(), cleanPhone, passwordHash, cleanHint, userRole, village ? village.trim() : null, cleanAadhaar]
     );
 
     const userId = insertResult.insertId;
@@ -156,7 +172,7 @@ router.post('/register', async (req, res) => {
  */
 router.post('/register-mandi', async (req, res) => {
   try {
-    const { full_name, phone_number, password, id_proof_number, centre_id } = req.body;
+    const { full_name, phone_number, password, id_proof_number, centre_id, password_hint } = req.body;
 
     if (!full_name || !phone_number || !password) {
       return res.status(400).json({ success: false, message: 'Officer name, phone number, and password are required.' });
@@ -174,19 +190,45 @@ router.post('/register-mandi', async (req, res) => {
       return res.status(409).json({ success: false, message: 'An account is already registered with this phone number.' });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    const assignedCentreId = centre_id ? Number(centre_id) : 1;
+    if (!centre_id) {
+      return res.status(400).json({ success: false, message: 'Please select an authorized APMC Mandi / Centre from the official directory.' });
+    }
+
+    const assignedCentreId = Number(centre_id);
     const centre = await db.get('SELECT centre_name, location, state, city FROM procurement_centres WHERE centre_id = ?', [assignedCentreId]);
+    if (!centre) {
+      return res.status(400).json({ success: false, message: 'Selected Mandi Centre does not exist. Please select an authorized APMC mandi from the list.' });
+    }
+
+    // Reject if already registered/claimed by another Mandi Admin
+    const existingAdmin = await db.get('SELECT id FROM centre_staff WHERE centre_id = ? AND role = ?', [assignedCentreId, 'mandi_admin']);
+    if (existingAdmin) {
+      return res.status(409).json({ success: false, message: `This Mandi Centre (${centre.centre_name}) is already registered by a Mandi Admin. Duplicate registration is not permitted.` });
+    }
+
+    // Process optional password hint
+    let cleanHint = null;
+    if (password_hint && typeof password_hint === 'string' && password_hint.trim()) {
+      cleanHint = password_hint.trim();
+      if (cleanHint.toLowerCase() === String(password).trim().toLowerCase()) {
+        return res.status(400).json({ success: false, message: 'Password hint cannot be identical to your password.' });
+      }
+      if (cleanHint.length > 150) {
+        cleanHint = cleanHint.substring(0, 150);
+      }
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
 
     // Insert into centre_staff
     const staffRes = await db.query(
-      'INSERT INTO centre_staff (centre_id, name, phone, password_hash, role) VALUES (?, ?, ?, ?, ?)',
-      [assignedCentreId, full_name.trim(), cleanPhone, passwordHash, 'mandi_admin']
+      'INSERT INTO centre_staff (centre_id, name, phone, password_hash, role, password_hint) VALUES (?, ?, ?, ?, ?, ?)',
+      [assignedCentreId, full_name.trim(), cleanPhone, passwordHash, 'mandi_admin', cleanHint]
     );
 
     // Also mirror in users for consistency
     const insertResult = await db.query(
-      'INSERT INTO users (full_name, phone_number, password_hash, role, village, id_proof_number, centre_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',
+      'INSERT INTO users (full_name, phone_number, password_hash, role, village, id_proof_number, centre_id, password_hint, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',
       [
         full_name.trim(),
         cleanPhone,
@@ -194,7 +236,8 @@ router.post('/register-mandi', async (req, res) => {
         'mandi_admin',
         centre ? `${centre.city}, ${centre.state}` : 'Mandi Office',
         id_proof_number ? id_proof_number.trim() : 'OFFICER-APMC',
-        assignedCentreId
+        assignedCentreId,
+        cleanHint
       ]
     );
 
@@ -473,8 +516,112 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
+
+
+// ============================================================================
+// PASSWORD HINT RECOVERY ENDPOINTS (Public)
+// ============================================================================
+
+/**
+ * POST /api/auth/forgot-password
+ * Password Hint lookup endpoint
+ * Accepts: { phone_number, role (optional) }
+ * Returns the registered password hint as a reminder (does NOT perform password reset)
+ */
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { phone_number, phone, role } = req.body;
+    const rawPhone = phone_number || phone;
+
+    if (!rawPhone) {
+      return res.status(400).json({
+        success: false,
+        message: 'Mobile number is required.'
+      });
+    }
+
+    const cleanPhone = String(rawPhone).trim().replace(/[^0-9]/g, '');
+    if (cleanPhone.length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter a valid 10-digit mobile number.'
+      });
+    }
+    const standardPhone = cleanPhone.slice(-10);
+
+    // Look up in users table first
+    let user = await db.get(
+      'SELECT user_id, full_name, role, password_hint FROM users WHERE phone_number = ? OR phone_number LIKE ?',
+      [standardPhone, `%${standardPhone}`]
+    );
+
+    // If not found in users, check centre_staff table
+    if (!user) {
+      const staff = await db.get(
+        'SELECT id as user_id, name as full_name, role, password_hint FROM centre_staff WHERE phone = ? OR phone LIKE ?',
+        [standardPhone, `%${standardPhone}`]
+      );
+      if (staff) {
+        user = staff;
+      }
+    }
+
+    // Neutral privacy-preserving message if account does not exist
+    if (!user) {
+      return res.json({
+        success: true,
+        has_hint: false,
+        message: 'If an account exists with this mobile number, your hint information will be displayed below.',
+        hint: null
+      });
+    }
+
+    // If user exists but no hint was configured
+    if (!user.password_hint || !user.password_hint.trim()) {
+      return res.json({
+        success: true,
+        has_hint: false,
+        no_hint_set: true,
+        message: 'No password hint was set for this account when it was registered. Please contact AgriConnect Mandi Support if you cannot recall your password.',
+        hint: null
+      });
+    }
+
+    // User exists and has a hint
+    return res.json({
+      success: true,
+      has_hint: true,
+      hint: user.password_hint.trim(),
+      password_hint: user.password_hint.trim(),
+      message: 'Use this hint to remember your password and return to the login page.'
+    });
+  } catch (err) {
+    console.error('Forgot password hint error:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error retrieving password hint.'
+    });
+  }
+});
+
+// Alias routes for compatibility
+router.post('/forgot-password/check', async (req, res) => {
+  req.url = '/forgot-password';
+  return router.handle(req, res);
+});
+
+router.post('/password-hint', async (req, res) => {
+  req.url = '/forgot-password';
+  return router.handle(req, res);
+});
+
+
+
+
+
 module.exports = {
   router,
   authenticateToken,
   requireRole
 };
+

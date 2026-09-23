@@ -645,8 +645,9 @@ a:hover {
   align-items: center;
 }
 
+.ticker-badge,
 .ticker-strip-wrapper::before {
-  content: '🔴 LIVE MANDI';
+  content: attr(data-ticker-label);
   position: absolute;
   left: 0;
   top: 0;
@@ -661,6 +662,22 @@ a:hover {
   z-index: 10;
   letter-spacing: 0.5px;
   border-right: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.ticker-strip-wrapper:has(.ticker-badge)::before {
+  display: none !important;
+  content: none !important;
+}
+
+.ticker-strip-wrapper:not([data-ticker-label])::before {
+  content: '🔴 LIVE MANDI';
+}
+html[lang="te"] .ticker-strip-wrapper:not([data-ticker-label])::before {
+  content: '🔴 లైవ్ మండి';
+}
+html[lang="hi"] .ticker-strip-wrapper:not([data-ticker-label])::before {
+  content: '🔴 लाइव मंडी';
 }
 
 .ticker-track {
@@ -734,7 +751,9 @@ a:hover {
    Light Mode Market Ticker High-Contrast Overrides
    ======================================================== */
 :root:not([data-theme="dark"]) .ticker-strip-wrapper,
-[data-theme="light"] .ticker-strip-wrapper {
+[data-theme="light"] .ticker-strip-wrapper,
+:root:not([data-theme="dark"]) .ticker-badge,
+[data-theme="light"] .ticker-badge {
   opacity: 1;
   filter: none;
 }
@@ -2725,4 +2744,628 @@ dialog::backdrop {
   gap: 0.3rem;
 }
 
+/* ========================================================
+   Landing Page: Clean Navigation & Role Selection Entry Flow
+   ======================================================== */
+.header-nav .btn {
+  font-size: 0.88rem;
+  padding: 0.45rem 1.1rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+.hero-auth-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.2rem 2rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.hero-auth-header {
+  text-align: center;
+}
+
+.hero-auth-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero-auth-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 0.4rem;
+}
+
+.hero-auth-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.hero-auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.hero-auth-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-color);
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.hero-auth-meta-item strong {
+  display: block;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+/* Role Selection Modal */
+.auth-modal-box {
+  max-width: 580px;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  overflow: hidden;
+  position: relative;
+}
+
+.auth-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.4rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.auth-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.auth-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin: 0;
+}
+
+.auth-modal-close-btn {
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.auth-modal-close-btn:hover {
+  background: var(--danger);
+  color: #FFFFFF;
+  border-color: var(--danger);
+}
+
+.auth-modal-back-btn {
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-modal-back-btn:hover {
+  background: var(--surface);
+  border-color: var(--primary-green);
+  color: var(--primary-green);
+}
+
+.auth-modal-body {
+  padding: 1.5rem;
+  max-height: calc(88vh - 70px);
+  overflow-y: auto;
+}
+
+.role-select-intro {
+  text-align: center;
+  margin-bottom: 1.4rem;
+}
+
+.role-select-intro h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 0.35rem;
+}
+
+.role-select-intro p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.role-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.15rem;
+  margin-bottom: 1.4rem;
+}
+
+.role-card {
+  background: var(--surface);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.15rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.role-card:hover {
+  border-color: var(--primary-green);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  background: var(--primary-subtle);
+}
+
+.role-card.staff-role:hover {
+  border-color: var(--accent);
+  background: var(--badge-queue-bg);
+}
+
+.role-card-icon {
+  font-size: 2.6rem;
+  margin-bottom: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease;
+}
+
+.role-card:hover .role-card-icon {
+  transform: scale(1.08);
+}
+
+.role-card-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.4rem;
+}
+
+.role-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.role-card-btn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  width: 100%;
+  pointer-events: none;
+}
+
+.role-card-footer-switch {
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-color);
+}
+
+.role-card-footer-switch a {
+  font-weight: 600;
+  color: var(--primary-green);
+  cursor: pointer;
+}
+
+.auth-form-subswitch {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-color);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.auth-form-subswitch a {
+  font-weight: 600;
+  color: var(--primary-green);
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .role-card-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .hero-auth-meta {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* ==========================================================================
+   Compact 3-Position Sliding Language Switch [E] [త] [ह]
+   ========================================================================== */
+
+.lang-switch-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-card-alt, rgba(0, 0, 0, 0.06));
+  border: 1.5px solid var(--border-color, rgba(0, 0, 0, 0.14));
+  border-radius: 9999px;
+  padding: 3px;
+  height: 36px;
+  box-sizing: border-box;
+  user-select: none;
+  z-index: 2;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .lang-switch-wrapper {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.lang-switch-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 32px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--primary-green, #2e7d32), var(--primary-dark, #1b5e20));
+  border-radius: 9999px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+  transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lang-switch-wrapper[data-active-lang="en"] .lang-switch-slider {
+  transform: translateX(0);
+}
+
+.lang-switch-wrapper[data-active-lang="te"] .lang-switch-slider {
+  transform: translateX(32px);
+}
+
+.lang-switch-wrapper[data-active-lang="hi"] .lang-switch-slider {
+  transform: translateX(64px);
+}
+
+.lang-btn {
+  position: relative;
+  z-index: 2;
+  width: 32px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #64748b);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 9999px;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+  outline: none;
+}
+
+.lang-btn:hover {
+  color: var(--text-main, #1e293b);
+}
+
+[data-theme="dark"] .lang-btn:hover {
+  color: #f1f5f9;
+}
+
+.lang-switch-wrapper[data-active-lang="en"] .lang-btn[data-lang="en"],
+.lang-switch-wrapper[data-active-lang="te"] .lang-btn[data-lang="te"],
+.lang-switch-wrapper[data-active-lang="hi"] .lang-btn[data-lang="hi"] {
+  color: #ffffff !important;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.header-nav,
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Mandi Registration 114 Centres Selection Component
+   ========================================================================== */
+.mandi-selector-group {
+  margin-bottom: 1rem;
+}
+
+.mandi-search-box-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.mandi-search-box {
+  width: 100%;
+  padding-right: 2.2rem;
+}
+
+.mandi-search-clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+}
+
+.mandi-search-clear-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-card-alt);
+}
+
+.mandi-selected-card {
+  border: 2px solid var(--primary-green);
+  background: var(--primary-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  animation: fadeInMandi 0.2s ease;
+}
+
+@keyframes fadeInMandi {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mandi-selected-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.mandi-selected-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.mandi-selected-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.mandi-selected-name {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mandi-selected-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mandi-picker-container {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 0.75rem;
+}
+
+.mandi-picker-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-card-alt);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.mandi-picker-legend {
+  display: inline-flex;
+  align-items: center;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.25rem;
+}
+
+.legend-dot.available {
+  background-color: var(--success);
+}
+
+.legend-dot.claimed {
+  background-color: var(--danger);
+}
+
+.mandi-picker-list {
+  max-height: 220px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.mandi-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.mandi-picker-item:last-child {
+  border-bottom: none;
+}
+
+.mandi-picker-item.available {
+  cursor: pointer;
+}
+
+.mandi-picker-item.available:hover {
+  background: var(--primary-subtle);
+}
+
+.mandi-picker-item.selected {
+  background: var(--bull-bg);
+  border-left: 4px solid var(--primary-green);
+}
+
+.mandi-picker-item.claimed {
+  opacity: 0.65;
+  background: var(--bg-card-alt);
+  cursor: not-allowed;
+}
+
+.mandi-item-main {
+  flex: 1;
+  min-width: 0;
+  padding-right: 0.75rem;
+}
+
+.mandi-item-name {
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mandi-picker-item.claimed .mandi-item-name {
+  color: var(--text-muted);
+}
+
+.mandi-item-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mandi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mandi-badge.badge-available {
+  background: var(--badge-complete-bg);
+  color: var(--badge-complete-text);
+  border: 1px solid var(--badge-complete-border);
+}
+
+.mandi-badge.badge-claimed {
+  background: var(--badge-cancel-bg);
+  color: var(--badge-cancel-text);
+  border: 1px solid var(--badge-cancel-border);
+}
+
+.mandi-picker-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   Password Hint & Account Recovery Styles
+   ========================================================================== */
+.forgot-password-link-wrapper a {
+  color: var(--primary-green);
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.forgot-password-link-wrapper a:hover {
+  text-decoration: underline !important;
+  color: var(--primary-dark);
+}
+
+.hint-display-card {
+  transition: all 0.2s ease;
+}
 

@@ -92,6 +92,8 @@
       return;
     }
 
+    const t = (k, f) => (window.AgriLang && typeof window.AgriLang.t === 'function' ? window.AgriLang.t(k, f) : f);
+
     grid.innerHTML = list.map(c => `
       <div class="mandi-directory-card">
         <div>
@@ -105,21 +107,28 @@
           </div>
           <div class="mandi-card-meta">
             <div class="mandi-card-meta-item">
-              <span>📦</span> <span><strong>Capacity:</strong> ${c.daily_capacity || 60} farmers/day</span>
+              <span>📦</span> <span><strong>${t('label_capacity', 'Capacity')}:</strong> ${c.daily_capacity || 60} ${t('label_farmers_per_day', 'farmers/day')}</span>
             </div>
             <div class="mandi-card-meta-item">
-              <span>🕒</span> <span><strong>Hours:</strong> ${formatTime(c.opening_time)} - ${formatTime(c.closing_time)}</span>
+              <span>🕒</span> <span><strong>${t('label_hours', 'Hours')}:</strong> ${formatTime(c.opening_time)} - ${formatTime(c.closing_time)}</span>
             </div>
           </div>
         </div>
         <div>
           <button type="button" class="btn btn-secondary btn-block" onclick="window.AgriMandis.selectMandiAndBook(${c.centre_id})" style="font-size: 0.85rem; padding: 0.55rem 0.8rem;">
-            Book Slot at this Mandi →
+            ${t('btn_book_slot_mandi', 'Book Slot at this Mandi →')}
           </button>
         </div>
       </div>
     `).join('');
   }
+
+  // Re-render mandis directory when language changes
+  window.addEventListener('languageChanged', () => {
+    if (document.getElementById('mandis-container')) {
+      renderMandisGrid();
+    }
+  });
 
   function escapeHtml(str = '') {
     return String(str || '')
@@ -136,9 +145,13 @@
     if (token && user && user.role === 'farmer') {
       window.location.href = `/dashboard.html?centre_id=${centreId}`;
     } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      const loginPhone = document.getElementById('login-phone');
-      if (loginPhone) loginPhone.focus();
+      if (typeof openAuthModal === 'function') {
+        openAuthModal('login', 'farmer');
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const loginPhone = document.getElementById('login-phone');
+        if (loginPhone) loginPhone.focus();
+      }
       AgriAuth.showToast('Please log in or register as a farmer to book your slot at this Mandi.', 'alert');
     }
   }

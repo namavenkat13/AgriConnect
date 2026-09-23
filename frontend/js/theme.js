@@ -29,13 +29,23 @@
 
   function updateToggleButtons(theme) {
     const btns = document.querySelectorAll('.theme-toggle-btn');
+    const isDark = theme === 'dark';
+    const lightText = (window.AgriLang && typeof window.AgriLang.t === 'function')
+      ? window.AgriLang.t('theme_light', 'Light Mode')
+      : 'Light Mode';
+    const darkText = (window.AgriLang && typeof window.AgriLang.t === 'function')
+      ? window.AgriLang.t('theme_dark', 'Dark Mode')
+      : 'Dark Mode';
+
     btns.forEach((btn) => {
-      if (theme === 'dark') {
-        btn.innerHTML = '<span class="btn-icon">☀️</span> <span>Light Mode</span>';
-        btn.setAttribute('aria-label', 'Switch to Light Mode');
+      if (isDark) {
+        btn.innerHTML = `<span class="btn-icon">☀️</span> <span data-i18n="theme_light">${lightText}</span>`;
+        btn.setAttribute('aria-label', lightText);
+        btn.setAttribute('title', lightText);
       } else {
-        btn.innerHTML = '<span class="btn-icon">🌙</span> <span>Dark Mode</span>';
-        btn.setAttribute('aria-label', 'Switch to Dark Mode');
+        btn.innerHTML = `<span class="btn-icon">🌙</span> <span data-i18n="theme_dark">${darkText}</span>`;
+        btn.setAttribute('aria-label', darkText);
+        btn.setAttribute('title', darkText);
       }
     });
   }
@@ -53,6 +63,11 @@
     });
   }
 
+  // Listen for language change to update toggle text
+  window.addEventListener('languageChanged', () => {
+    updateToggleButtons(document.documentElement.getAttribute('data-theme') || 'light');
+  });
+
   document.addEventListener('DOMContentLoaded', () => {
     updateToggleButtons(document.documentElement.getAttribute('data-theme') || 'light');
   });
@@ -60,6 +75,7 @@
   window.AgriTheme = {
     getPreferredTheme,
     applyTheme,
-    toggleTheme
+    toggleTheme,
+    updateToggleButtons
   };
 })();
