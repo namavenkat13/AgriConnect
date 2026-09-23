@@ -323,14 +323,25 @@ body, .modal-box, .modal-content, .card, .dashboard-card, .auth-card, .rate-card
   padding: 0;
 }
 
+html {
+  height: 100%;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-warm);
   color: var(--text-main);
   line-height: 1.5;
+  min-height: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  position: relative;
 }
 
 a {
@@ -429,6 +440,7 @@ a:hover {
   border-bottom: 2px solid var(--accent);
   position: sticky;
   top: 0;
+  width: 100%;
   z-index: 100;
   box-shadow: var(--shadow-sm);
 }
@@ -637,7 +649,10 @@ a:hover {
 .ticker-strip-wrapper {
   background-color: var(--header-band);
   color: var(--header-text);
+  width: 100%;
+  max-width: 100%;
   overflow: hidden;
+  contain: paint;
   border-bottom: 2px solid var(--accent);
   position: relative;
   height: 48px;
@@ -844,12 +859,21 @@ html[lang="hi"] .ticker-strip-wrapper:not([data-ticker-label])::before {
 /* ========================================================
    Container & Layout
    ======================================================== */
-.container {
+.container,
+.main-content {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   padding: 2rem 1.25rem;
-  flex: 1;
+  flex: 1 0 auto;
+  box-sizing: border-box;
+}
+
+.dashboard-container {
+  width: 100%;
+  margin: 0 auto;
+  flex: 1 0 auto;
+  box-sizing: border-box;
 }
 
 .section-title {
@@ -1621,6 +1645,8 @@ html[lang="hi"] .ticker-strip-wrapper:not([data-ticker-label])::before {
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   background: var(--surface);
@@ -1796,6 +1822,7 @@ html[lang="hi"] .ticker-strip-wrapper:not([data-ticker-label])::before {
 /* Prevent background page from scrolling while any modal is open */
 body.modal-open {
   overflow: hidden !important;
+  overscroll-behavior: none;
 }
 
 /* Overlay: covers full viewport, centers the modal box horizontally and vertically */
@@ -1803,8 +1830,9 @@ body.modal-open {
 .modal-backdrop {
   position: fixed !important;
   inset: 0 !important; /* top, right, bottom, left: 0 */
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
   background: rgba(0, 0, 0, 0.65);
   display: none;
   align-items: center;
@@ -1812,6 +1840,9 @@ body.modal-open {
   padding: 16px; /* breathing room on small screens */
   z-index: 9999;
   overflow-y: auto; /* allow overlay to scroll if box is taller than viewport */
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   box-sizing: border-box;
@@ -1829,6 +1860,7 @@ body.modal-open {
   width: 100%;
   max-width: 560px; /* default max width - overridden per modal */
   max-height: 90vh; /* never exceed viewport height */
+  max-height: 90dvh;
   overflow: hidden; /* Header and footer stay pinned; body handles internal scrolling */
   background: var(--surface);
   color: var(--text);
@@ -1971,8 +2003,9 @@ dialog {
   border-radius: 12px;
   padding: 0;
   max-width: 560px;
-  width: 90vw;
+  width: min(560px, calc(100% - 32px));
   max-height: 90vh;
+  max-height: 90dvh;
   margin: auto;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
   background: var(--surface);
@@ -2077,6 +2110,9 @@ dialog::backdrop {
   font-size: 0.85rem;
   color: var(--text-muted);
   margin-top: auto;
+  width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .footer-inner {
@@ -2891,7 +2927,10 @@ dialog::backdrop {
 .auth-modal-body {
   padding: 1.5rem;
   max-height: calc(88vh - 70px);
+  max-height: calc(88dvh - 70px);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .role-select-intro {
